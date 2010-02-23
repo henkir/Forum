@@ -12,6 +12,8 @@ import com.google.gwt.core.client.EntryPoint;
 public class Forum implements EntryPoint {
 
 	public void onModuleLoad() {
-
+		// Test of admin panel.
+		new AdminPanel();
+		new RegistrationForm().draw();
 	}
 }
