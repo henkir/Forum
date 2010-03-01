@@ -21,7 +21,7 @@ public class DatabaseConnection {
 	/**
 	 * Contains the host address.
 	 */
-	private String host = "127.0.0.1";
+	private String host = "192.168.0.103";
 	/**
 	 * Contains the username to login with.
 	 */
@@ -134,11 +134,11 @@ public class DatabaseConnection {
 					+ "/" + name, user, pass);
 		} catch (ClassNotFoundException e) {
 			connection = null;
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println("ERROR: " + e.toString());
 			return;
 		} catch (SQLException e) {
 			connection = null;
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println("ERROR: " + e.toString());
 			return;
 		}
 	}
@@ -151,7 +151,7 @@ public class DatabaseConnection {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				System.err.println("ERROR: " + e.getMessage());
+				System.err.println("ERROR: " + e.toString());
 			}
 		}
 	}
@@ -167,10 +167,10 @@ public class DatabaseConnection {
 		try {
 			return connection.createStatement();
 		} catch (SQLException e) {
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println("ERROR: " + e.toString());
 			return null;
 		} catch (NullPointerException e) {
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println("ERROR: " + e.toString());
 			return null;
 		}
 	}
