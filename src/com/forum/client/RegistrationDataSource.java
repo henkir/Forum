@@ -10,7 +10,7 @@ public class RegistrationDataSource extends DataSource {
 		DataSourceTextField firstNameField = new DataSourceTextField(
 				"username", "Username", 30, true);
 		DataSourcePasswordField passwordField = new DataSourcePasswordField(
-				"password", "Password", 20, true);
+				"password", "Password", 50, true);
 
 		setFields(firstNameField, passwordField);
 	}

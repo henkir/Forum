@@ -6,6 +6,15 @@
 <web-app>
   
   <!-- Servlets -->
+  <servlet>
+    <servlet-name>AdminServiceImpl</servlet-name>
+    <servlet-class>com.forum.server.AdminServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AdminServiceImpl</servlet-name>
+    <url-pattern>/forum/adminTasks</url-pattern>
+  </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

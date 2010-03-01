@@ -2,6 +2,7 @@ package com.forum.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -12,13 +13,16 @@ public class AdminPanel extends Canvas {
 
 	private AdminServiceAsync adminSvc = GWT.create(AdminService.class);
 
+	/**
+	 * Checks if a user is logged in and if he has privileges to access the
+	 * admin panel. If so, then show it. Otherwise, display a message.
+	 */
 	public AdminPanel() {
 
 		AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
 
 			@Override
 			public void onSuccess(Integer result) {
-				System.out.println(result);
 				if (result == 2) {
 					showPanel();
 				} else if (result == 1) {
@@ -30,7 +34,7 @@ public class AdminPanel extends Canvas {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				System.err.println("Failure: " + caught.getMessage());
+				System.err.println("Failure: ");
 			}
 		};
 
@@ -40,14 +44,18 @@ public class AdminPanel extends Canvas {
 
 	private Window createNotificationWindow(String title) {
 		Window window = new Window();
-		window.setWidth(300);
-		window.setHeight(200);
-		window.setPadding(30);
+		window.setWidth(4);
+		window.setHeight(3);
+		window.setPadding(5);
+		window.setOverflow(Overflow.HIDDEN);
+		window.setAnimateTime(800);
 		window.setIsModal(true);
 		window.setShowMinimizeButton(false);
 		window.setShowModalMask(true);
 		window.setTitle(title);
 		window.centerInPage();
+		window.setLeft(window.getLeft() - 200);
+		window.setTop(window.getTop() - 150);
 
 		return window;
 	}
@@ -59,6 +67,7 @@ public class AdminPanel extends Canvas {
 	private void showNotAuthorized() {
 		Label notAuthorizedLabel = new Label(
 				"You are not authorized to view this area.");
+		notAuthorizedLabel.setAutoHeight();
 		IButton returnButton = new IButton("Go back");
 		// TODO fix so button returns to front page
 		Window window = createNotificationWindow("Not authorized");
@@ -71,8 +80,6 @@ public class AdminPanel extends Canvas {
 		Label instructionLabel = new Label(
 				"This area requires authorization. Please log in.");
 		instructionLabel.setAutoHeight();
-		final LoginForm loginForm = new LoginForm();
-
 		IButton returnButton = new IButton("Go back");
 		// TODO fix so button returns to front page
 		VLayout layout = new VLayout(10);
@@ -82,6 +89,7 @@ public class AdminPanel extends Canvas {
 		Window window = createNotificationWindow("Log in");
 		window.addItem(layout);
 		window.draw();
+		window.animateResize(300, 200);
 	}
 
 }
