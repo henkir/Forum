@@ -1,5 +1,39 @@
+body {
+	background-color: #ffff00;
+	color: #ff0000;
+}
 
+.banner {
+	background-color: #ffff00;
+	text-align: center;
+	width: 1900px;
+}
 
 .defaultButton {
 	font-weight: bold;
+}
+
+.categoryHeader {
+	font-size: 200%;
+	font-weight: bold;
+	color: #ff0000;
+	text-align: center;
+}
+
+.categoryTitle {
+	font-size: 125%;
+	color: #33ff00;
+}
+
+.category {
+	border: 1px solid #000000;
+	background-color: #b0f963;
+}
+
+.forumTitle {
+	background-color: #ffff00;
+	font-size: 300%;
+	font-weight: bold;
+	color: 0000ff;
+	text-align: left;
 }
