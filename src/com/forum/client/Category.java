@@ -64,14 +64,17 @@ public class Category extends Canvas {
 //fixa lite här
 			@Override
 			public void onClick(ClickEvent event) {
-				if (currentThread != thread) {
-					hide();
-					if (currentThread != null)
-						killThread();
-					currentThread = thread;
-				//	parent.addChild(thread);
-					thread.unhide();
-				}
+				
+				thread.draw();
+				hide();
+//				if (currentThread != thread) {
+//					hide();
+//					if (currentThread != null)
+//						killThread();
+//					currentThread = thread;
+//					parent.addChild(thread);
+//					thread.unhide();
+//				}
 			}
 		});
 		labels.add(label);
