@@ -88,8 +88,8 @@ public class AdminPanel extends Canvas {
 		layout.addMember(returnButton);
 		Window window = createNotificationWindow("Log in");
 		window.addItem(layout);
-		window.draw();
-		window.animateResize(300, 200);
+		// window.draw();
+		// window.animateResize(300, 200);
 	}
 
 }

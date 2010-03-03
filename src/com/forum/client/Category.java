@@ -1,29 +1,21 @@
 package com.forum.client;
 
-
-
-
 import com.smartgwt.client.widgets.Canvas;
-
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
-
-
 
 public class Category extends Canvas {
 
 	private boolean hidden = true;
 	private Canvas gfx;
 	private String name = "BögSEX";
-	
 
 	public Category() {
 		super();
-		setContents("<h2> <center>" + name + " TopiXX</center></h2>");
+		setContents("<div class='categoryTitle'>" + name + " TopiXX</div>");
 		setCanDragReposition(false);
 		setCanDragResize(false);
-		setBorder("1px solid #000000");
-		setBackgroundColor("#b0f963");
+		setStyleName("category");
 		gfx = makePanel();
 
 		hide();

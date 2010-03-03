@@ -18,11 +18,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	private HttpSession session;
 
 	public AdminServiceImpl() {
-		super();
-		request = this.getThreadLocalRequest();
-		System.out.println("request " + request);
-		session = request.getSession();
-		connection = new DatabaseConnection(true);
+		// super();
+		// request = this.getThreadLocalRequest();
+		// System.out.println("request " + request);
+		// session = request.getSession();
+		// connection = new DatabaseConnection(true);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public int hasPrivileges(int privilegeLevel) {
 
-		String userId = session.getAttribute("user_id").toString();
+		String userId = null; // session.getAttribute("user_id").toString();
 		if (userId == null) {
 			return 0;
 		}

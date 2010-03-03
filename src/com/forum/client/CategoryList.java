@@ -2,7 +2,6 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.layout.client.Layout.Alignment;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -12,7 +11,7 @@ public class CategoryList extends Canvas {
 	private ArrayList<Category> categories = new ArrayList<Category>();
 	private boolean hidden = false;
 	private Canvas parent;
-	private Category currenCategory;
+	private Category currentCategory;
 
 	public CategoryList(Canvas parent) {
 		super();
@@ -20,8 +19,8 @@ public class CategoryList extends Canvas {
 		setWidth(600);
 		setHeight(100);
 		setLeft(500);
-		setContents("<h2> <center>Forum Categories</center></h2>");
-		
+		setContents("<div class='categoryHeader'>Forum Categories</div>");
+
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setBorder("1px solid #000000");
@@ -39,11 +38,11 @@ public class CategoryList extends Canvas {
 				}
 			}
 		});
-		currenCategory = new Category();
-		addCategory(currenCategory);
-		Canvas grph = currenCategory.getGraphics();
+		currentCategory = new Category();
+		addCategory(currentCategory);
+		Canvas grph = currentCategory.getGraphics();
 		grph.setTop(25);
-		addChild(currenCategory.getGraphics());
+		addChild(currentCategory.getGraphics());
 	}
 
 	public void addCategory(Category category) {
@@ -51,9 +50,9 @@ public class CategoryList extends Canvas {
 		setHeight(getHeight() + 10);
 		parent.addChild(category);
 	}
-	
-	public void killCategory(){
-		parent.removeChild(currenCategory);
+
+	public void killCategory() {
+		parent.removeChild(currentCategory);
 	}
 
 	public void hide() {
