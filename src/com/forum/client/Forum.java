@@ -4,8 +4,11 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
 
 /**
  * Forum is the main class in the project and is the entry point. The first
@@ -15,20 +18,20 @@ import com.smartgwt.client.widgets.Label;
  * 
  */
 public class Forum implements EntryPoint {
-	VerticalPanel panel = new VerticalPanel();
+	final VerticalPanel panel = new VerticalPanel();
 	Canvas forumCanvas = new Canvas();
 	CategoryList catList = new CategoryList(forumCanvas);
+	final Image banner = new Image("images/forum_banner.png");
+	Button adminButton = new Button("Admin panel");
+	Button forumButton = new Button("Forum panel");
+	Label forumTitle = new Label("Forum");
+	AdminPanel adminPanel = new AdminPanel();
+
+	ButtonClickHandler buttonClickHandler = new ButtonClickHandler();
 
 	public void onModuleLoad() {
-		Image banner = new Image("images/forum_banner.png");
-		Label forumTitle = new Label("Forum");
-		forumTitle.setStyleName("forumTitle");
 
-		// the panel
-		panel.setWidth("150px");
-		panel.add(banner);
-		panel.add(forumTitle);
-		panel.add(forumCanvas);
+		forumTitle.setStyleName("forumTitle");
 
 		// the canvas
 		forumCanvas.setWidth("100%");
@@ -37,7 +40,45 @@ public class Forum implements EntryPoint {
 		forumCanvas.setBackgroundColor("#ffff00");
 		// forumCanvas.draw();
 
+		showForumPanel();
+
 		RootPanel.get("main").add(panel);
+
+	}
+
+	private void showForumPanel() {
+		panel.clear();
+		System.out.println("forum");
+		// Click handlers stop working after one click???
+		adminButton = new Button("Admin panel");
+		adminButton.addClickHandler(buttonClickHandler);
+		panel.add(adminButton);
+		panel.add(banner);
+		panel.add(forumTitle);
+		panel.add(forumCanvas);
+	}
+
+	private void showAdminPanel() {
+		System.out.println("admin");
+		panel.clear();
+		forumButton = new Button("Forum panel");
+		forumButton.addClickHandler(buttonClickHandler);
+		panel.add(forumButton);
+		panel.add(banner);
+		panel.add(adminPanel);
+	}
+
+	private class ButtonClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			System.out.println("CLICK");
+			if (event.getSource() == adminButton) {
+				showAdminPanel();
+			} else if (event.getSource() == forumButton) {
+				showForumPanel();
+			}
+		}
 
 	}
 }

@@ -2,16 +2,22 @@ package com.forum.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.types.Overflow;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-public class AdminPanel extends Canvas {
+public class AdminPanel extends VerticalPanel {
 
 	private AdminServiceAsync adminSvc = GWT.create(AdminService.class);
+
+	final ListGrid categories = new ListGrid();
+	final VerticalPanel panel = new VerticalPanel();
 
 	/**
 	 * Checks if a user is logged in and if he has privileges to access the
@@ -60,8 +66,56 @@ public class AdminPanel extends Canvas {
 		return window;
 	}
 
+	private void initComponents() {
+		ListGridField categoryField = new ListGridField("Name", 80);
+		ListGridField descriptionField = new ListGridField("Description", 100);
+		categories.setCanReorderRecords(true);
+		categories.setFields(categoryField, descriptionField);
+	}
+
 	private void showPanel() {
 
+		initComponents();
+
+		AsyncCallback<User[]> callbackUsers = new AsyncCallback<User[]>() {
+
+			@Override
+			public void onSuccess(User[] result) {
+				for (User user : result) {
+
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.out.println("Failure: " + caught.getMessage());
+			}
+		};
+
+		AsyncCallback<AdminCategory[]> callbackCategories = new AsyncCallback<AdminCategory[]>() {
+
+			@Override
+			public void onSuccess(AdminCategory[] result) {
+				ListGridRecord record;
+				for (AdminCategory category : result) {
+					record = new ListGridRecord();
+					record.setAttribute("Name", category.getName());
+					record.setAttribute("Description", category
+							.getDescription());
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.out.println("Failure: " + caught.getMessage());
+			}
+		};
+
+		// add(categories);
+		// addChild(panel);
+
+		// adminSvc.getUsers(callbackUsers);
+		// adminSvc.getCategories(callbackCategories);
 	}
 
 	private void showNotAuthorized() {
@@ -69,7 +123,6 @@ public class AdminPanel extends Canvas {
 				"You are not authorized to view this area.");
 		notAuthorizedLabel.setAutoHeight();
 		IButton returnButton = new IButton("Go back");
-		// TODO fix so button returns to front page
 		Window window = createNotificationWindow("Not authorized");
 		window.addItem(notAuthorizedLabel);
 		window.addItem(returnButton);
@@ -81,15 +134,14 @@ public class AdminPanel extends Canvas {
 				"This area requires authorization. Please log in.");
 		instructionLabel.setAutoHeight();
 		IButton returnButton = new IButton("Go back");
-		// TODO fix so button returns to front page
 		VLayout layout = new VLayout(10);
 		layout.addMember(instructionLabel);
 		layout.addMember(new LoginForm());
 		layout.addMember(returnButton);
 		Window window = createNotificationWindow("Log in");
 		window.addItem(layout);
-		// window.draw();
-		// window.animateResize(300, 200);
+		window.draw();
+		window.animateResize(300, 200);
 	}
 
 }
