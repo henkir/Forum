@@ -2,66 +2,102 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 
 public class CategoryList extends Canvas {
 
-	private ArrayList<Category> categories = new ArrayList<Category>();
+	private ArrayList<Label> labels = new ArrayList<Label>();
+	private final Label title = new Label(
+			"<div class='categoryHeader'> Forum Categories </div>");
 	private boolean hidden = false;
 	private Canvas parent;
-	private Category currentCategory;
+	private Category currentCategory = null;
+
+	// kommer ihåg vart
+	private int currentHeight = 0;
 
 	public CategoryList(Canvas parent) {
 		super();
 		this.parent = parent;
 		setWidth(600);
-		setHeight(100);
+		setHeight(10);
 		setLeft(500);
-		setContents("<div class='categoryHeader'>Forum Categories</div>");
+		title.setTop(currentHeight);
+		title.setHeight(30);
+		title.setWidth(200);
+		title.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				if (hidden) {
+					unhide();
+					killCategory();
+				}
+			}
+		});
+		addChild(title);
+		currentHeight += title.getHeight();
 
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setBorder("1px solid #000000");
 		setBackgroundColor("#b0f963");
-		addClickHandler(new ClickHandler() {
+
+		addCategory(new Category("Bögsex", parent));
+		addCategory(new Category("Henrik Sex", parent));
+		addCategory(new Category("DjurSex", parent));
+
+	}
+
+	public void addCategory(final Category category) {
+		final Label label = new Label("<div class='category'>"
+				+ category.getName() + "</div>");
+		label.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (hidden) {
-					unhide();
-					killCategory();
-				} else {
+				if (currentCategory != category) {
 					hide();
-					categories.get(0).unhide();
+					if (currentCategory != null)
+						killCategory();
+					currentCategory = category;
+					parent.addChild(category);
+					category.unhide();
 				}
 			}
 		});
-		currentCategory = new Category();
-		addCategory(currentCategory);
-		Canvas grph = currentCategory.getGraphics();
-		grph.setTop(25);
-		addChild(currentCategory.getGraphics());
-	}
-
-	public void addCategory(Category category) {
-		categories.add(category);
-		setHeight(getHeight() + 10);
-		parent.addChild(category);
+		labels.add(label);
+		label.setHeight(30);
+		label.setWidth(getWidth());
+		setHeight(getHeight() + label.getHeight());
+		label.setTop(currentHeight);
+		currentHeight += label.getHeight();
+		addChild(label);
 	}
 
 	public void killCategory() {
+		currentCategory.hide();
 		parent.removeChild(currentCategory);
 	}
 
 	public void hide() {
+
 		animateRect(0, 0, 200, getHeight(), null, 1000);
+		for (Label l : labels)
+			l.setWidth(200);
 		hidden = true;
 	}
 
 	public void unhide() {
 		animateRect(500, 0, 600, getHeight(), null, 1000);
+		for (Label l : labels)
+			l.setWidth(600);
 		hidden = false;
 	}
 

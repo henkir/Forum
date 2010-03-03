@@ -1,63 +1,106 @@
 package com.forum.client;
 
+import java.util.ArrayList;
+
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 
 public class Category extends Canvas {
 
 	private boolean hidden = true;
-	private Canvas gfx;
-	private String name = "BögSEX";
+	private String name = "";
+	private Label title;
+	private Canvas parent;
+	private ArrayList<Label> labels = new ArrayList<Label>();
 
-	public Category() {
+	private int currentHeight = 0;
+	private ForumThread currentThread = null;
+
+	public Category(String name, Canvas parent) {
 		super();
-		setContents("<div class='categoryTitle'>" + name + " TopiXX</div>");
 		setCanDragReposition(false);
 		setCanDragResize(false);
-		setStyleName("category");
-		gfx = makePanel();
-
-		hide();
-	}
-
-	public Canvas getGraphics() {
-		return gfx;
-	}
-
-	public void hide() {
-		animateRect(0, 0, 0, 0, null, 1000);
-		setVisible(false);
-		hidden = true;
-	}
-
-	public void unhide() {
-		animateRect(500, 10, 600, getHeight(), null, 1000);
-		setVisible(true);
-		hidden = false;
-	}
-
-	public Canvas makePanel() {
-		Canvas result = new Canvas();
-		result.setContents("<center><link> " + name + " </link></center>");
-		result.setWidth(600);
-		result.setHeight(15);
-		result.addClickHandler(new ClickHandler() {
+		setWidth(600);
+		setHeight(10);
+		this.name = name;
+		this.parent = parent;
+		title = new Label("<div class='categoryTitle'>" + name
+				+ " TopiXX</div>");
+		title.setTop(currentHeight);
+		title.setHeight(25);
+		title.setWidth(200);
+		title.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				if (hidden) {
 					unhide();
-
-				} else {
-					hide();
-
+					killThread();
 				}
 			}
 		});
+		addChild(title);
+		currentHeight += title.getHeight();
 
-		return result;
+		setBackgroundColor("#b0f963");
+		setBorder("1px solid #000000");
+
+		addThread(new ForumThread("apa", parent));
+	}
+
+	private void killThread() {
+		currentThread.hide();
+		//parent.removeChild(currentThread);
+
+	}
+
+	public void addThread(final ForumThread thread) {
+		final Label label = new Label("<div class='category'>"
+				+ thread.getName() + "</div>");
+		label.addClickHandler(new ClickHandler() {
+//fixa lite här
+			@Override
+			public void onClick(ClickEvent event) {
+				if (currentThread != thread) {
+					hide();
+					if (currentThread != null)
+						killThread();
+					currentThread = thread;
+				//	parent.addChild(thread);
+					thread.unhide();
+				}
+			}
+		});
+		labels.add(label);
+		label.setHeight(30);
+		label.setWidth(getWidth());
+		setHeight(getHeight() + label.getHeight());
+		label.setTop(currentHeight);
+		currentHeight += label.getHeight();
+		addChild(label);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void hide() {
+		animateRect(250, 0, 200, getHeight(), null, 1000);
+		for (Label l : labels)
+			l.setWidth(200);
+		// setVisible(false);
+		hidden = true;
+	}
+
+	public void unhide() {
+		animateRect(500, 0, 600, getHeight(), null, 1000);
+		for (Label l : labels)
+			l.setWidth(600);
+		setVisible(true);
+		hidden = false;
 	}
 
 }
