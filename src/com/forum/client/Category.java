@@ -48,33 +48,26 @@ public class Category extends Canvas {
 		setBackgroundColor("#b0f963");
 		setBorder("1px solid #000000");
 
-		addThread(new ForumThread("apa", parent));
+		addThread(new ForumThread("Henkes Penis", parent));
 	}
 
 	private void killThread() {
-		currentThread.hide();
-		//parent.removeChild(currentThread);
-
+		currentThread.kill();
+		currentThread = null;
 	}
 
 	public void addThread(final ForumThread thread) {
 		final Label label = new Label("<div class='category'>"
 				+ thread.getName() + "</div>");
 		label.addClickHandler(new ClickHandler() {
-//fixa lite här
+			// fixa lite här
 			@Override
 			public void onClick(ClickEvent event) {
-				
-				thread.draw();
-				hide();
-//				if (currentThread != thread) {
-//					hide();
-//					if (currentThread != null)
-//						killThread();
-//					currentThread = thread;
-//					parent.addChild(thread);
-//					thread.unhide();
-//				}
+				if (currentThread != thread) {
+					thread.draw();
+					hide();
+					currentThread = thread;
+				}
 			}
 		});
 		labels.add(label);
@@ -95,6 +88,8 @@ public class Category extends Canvas {
 		for (Label l : labels)
 			l.setWidth(200);
 		// setVisible(false);
+		if (currentThread != null)
+			killThread();
 		hidden = true;
 	}
 

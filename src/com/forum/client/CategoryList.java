@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -75,6 +76,7 @@ public class CategoryList extends Canvas {
 		labels.add(label);
 		label.setHeight(30);
 		label.setWidth(getWidth());
+		label.setAlign(Alignment.CENTER);
 		setHeight(getHeight() + label.getHeight());
 		label.setTop(currentHeight);
 		currentHeight += label.getHeight();
@@ -84,6 +86,7 @@ public class CategoryList extends Canvas {
 	public void killCategory() {
 		currentCategory.hide();
 		parent.removeChild(currentCategory);
+		currentCategory = null;
 	}
 
 	public void hide() {

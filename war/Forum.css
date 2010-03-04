@@ -26,13 +26,17 @@ body {
 	color: #5650d2;
 }
 
+.threadTitle {
+	font-size: 150%;
+	color: #000000;	
+}
+
 .category {
 	font-size: 125%;
 	text-align: center;
 	border: 1px solid #000000;
 	background-color: #f98383;
 }
-
 
 .forumTitle {
 	background-color: #ffff00;
