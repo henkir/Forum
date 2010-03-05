@@ -22,17 +22,36 @@ public class ForumThread {
 	private Label title;
 	private ArrayList<Post> posts = new ArrayList<Post>();
 	private int currentHeight = 0;
+	private int id;
+	private int categoryID;
+	private int authorID;
+	private String date;
+
+	public ForumThread(int id, int catID, int auID, String name, String date, Canvas parent) {
+		this.id = id;
+		this.categoryID = catID;
+		this.authorID = auID;
+		this.name = name;
+		this.date = date;
+		this.parent = parent;
+		initThread();
+	}
 
 	public ForumThread(final String name, Canvas parent) {
 		this.name = name;
 		this.parent = parent;
+		initThread();
+
+	}
+
+	private void initThread() {
 		// headsection
 		head = new Canvas();
 		title = new Label("<div class='threadTitle'>" + name + "</div>");
 		title.setWidth(200);
 		title.setHeight(30);
 		head.addChild(title);
-		//head.setContents(name);
+		// head.setContents(name);
 		head.setHeight(30);
 		head.setWidth(500);
 		head.setBackgroundColor("#b0f963");
@@ -47,23 +66,23 @@ public class ForumThread {
 		tailLayout = new VStack();
 		tailLayout.setMembersMargin(5);
 		tailLayout.setLayoutMargin(10);
-		
+
 		tailLayout.addMember(new Label("<h3>Posta en post kanske?</h3>"));
-		
+
 		rtEditor = new RichTextEditor();
 		rtEditor.setHeight(150);
 		rtEditor.setWidth(530);
-		rtEditor.setCanDragResize(false); 
+		rtEditor.setCanDragResize(false);
 		rtEditor.setShowEdges(true);
 		rtEditor.setBackgroundColor("#b0f963");
 		tailLayout.addMember(rtEditor);
-		
+
 		submitButton = new Button("Submit!");
 		submitButton.addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
-				addPost(new Post(name,rtEditor.getValue()));
+				addPost(new Post(name, rtEditor.getValue()));
 				kill();
 				currentHeight = 0;
 				draw();
@@ -73,8 +92,7 @@ public class ForumThread {
 		tailLayout.addMember(submitButton);
 		tail.addChild(tailLayout);
 		// bodysection
-		addPost(new Post(name,"jag gillar henkesex best!"));
-
+		addPost(new Post(name, "jag gillar henkesex best!"));
 	}
 
 	private void addPost(Post post) {
@@ -85,12 +103,12 @@ public class ForumThread {
 		return name;
 	}
 
-	public void draw(){
+	public void draw() {
 		head.setLeft(500);
 		currentHeight += head.getHeight() + 10;
 		parent.addChild(head);
 		head.setVisible(true);
-		for(Post p : posts){
+		for (Post p : posts) {
 			p.setTop(currentHeight);
 			currentHeight += p.getHeight() + 10;
 			p.setLeft(500);
@@ -100,14 +118,13 @@ public class ForumThread {
 		tail.setTop(currentHeight);
 		tail.setLeft(500);
 		parent.addChild(tail);
-		
-		
+
 	}
 
-	public void kill(){
+	public void kill() {
 		parent.removeChild(head);
 		head.setVisible(false);
-		for(Post p : posts){
+		for (Post p : posts) {
 			p.setVisible(false);
 			parent.removeChild(p);
 		}
