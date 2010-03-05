@@ -2,6 +2,8 @@ package com.forum.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,6 +14,7 @@ import com.forum.client.admin.AdminCategory;
 import com.forum.client.admin.AdminService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+@SuppressWarnings("unused")
 public class AdminServiceImpl extends RemoteServiceServlet implements
 		AdminService {
 
@@ -29,7 +32,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		// request = this.getThreadLocalRequest();
 		// System.out.println("request " + request);
 		// session = request.getSession();
-		// connection = new DatabaseConnection(true);
+		connection = new DatabaseConnection(true);
 	}
 
 	@Override
@@ -37,9 +40,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		if (hasPrivileges(Privileges.MODERATOR) == authorized) {
 			String name = category.getName();
 			String description = category.getDescription();
-			int position = category.getPosition();
-			String query = "INSERT INTO categories(name, description, position VALUES('"
-					+ name + "', '" + description + "', '" + position + "');";
+			String query = "INSERT INTO categories(name, description, position) VALUES('"
+					+ name + "', '" + description + "', MAX(position));";
 			return queryUpdate(query);
 		}
 		return false;
@@ -71,8 +73,63 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean setCategoryPosition(AdminCategory category, int position) {
-		// TODO Auto-generated method stub
+	public boolean setCategories(AdminCategory[] categories) {
+		String querySelect = "";
+		String queryDelete = "";
+		String queryInsert = "";
+		String queryUpdate = "";
+		String querySelect2 = "";
+
+		try {
+			Statement statement = connection.getStatement();
+			String name;
+			String description;
+
+			ResultSet rs;
+			querySelect = "SELECT id FROM categories;";
+			rs = statement.executeQuery(querySelect);
+			int tempId;
+			boolean remove;
+			while (rs.next()) {
+				remove = true;
+				tempId = rs.getInt("id");
+				if (tempId > 0) {
+					for (int i = 0; i < categories.length; i++) {
+						if (tempId == categories[i].getId()) {
+							remove = false;
+							break;
+						}
+					}
+					if (remove) {
+						queryDelete = "DELETE FROM categories WHERE id = "
+								+ tempId + ";";
+						statement.executeUpdate(queryDelete);
+					}
+				}
+			}
+			for (int i = 0; i < categories.length; i++) {
+				name = categories[i].getName();
+				description = categories[i].getDescription();
+				querySelect2 = "SELECT id FROM categories WHERE name = '"
+						+ name + "';";
+				rs = statement.executeQuery(querySelect2);
+				if (rs.next()) {
+					queryUpdate = "UPDATE categories SET name = '" + name
+							+ "', description = '" + description
+							+ "', position = " + (i + 1) + " WHERE id = "
+							+ categories[i].getId() + ";";
+					statement.executeUpdate(queryUpdate);
+				} else {
+					queryInsert = "INSERT INTO categories(name, description, position) VALUES('"
+							+ name + "', '" + description + "', " + i + ");";
+					statement.executeUpdate(queryInsert);
+				}
+
+			}
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
@@ -121,12 +178,33 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public AdminCategory[] getCategories() {
-		AdminCategory[] categories = {
-				new AdminCategory("gay stuff", "you know, like GAY", 1),
-				new AdminCategory("straight stuff???", "NAAAA", 2),
-				new AdminCategory("your mother", "on pizza you know", 3) };
+		if (connection == null) {
+			return null;
+		}
 
-		return categories;
+		String query = "SELECT id, name, description, position FROM categories ORDER BY position;";
+		Statement statement = connection.getStatement();
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			ArrayList<AdminCategory> categories = new ArrayList<AdminCategory>();
+			String tempDescription;
+			String tempName;
+			int tempId;
+			int tempPos;
+			while (rs.next()) {
+				tempId = rs.getInt("id");
+				tempDescription = rs.getString("description");
+				tempName = rs.getString("name");
+				categories.add(new AdminCategory(tempId, tempName,
+						tempDescription));
+			}
+			AdminCategory[] c = new AdminCategory[0];
+			return categories.toArray(c);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 
 	@Override
@@ -137,12 +215,31 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public User[] getUsers() {
-		User[] users = { new User("user", Privileges.MEMBER),
-				new User("user2", Privileges.MEMBER),
-				new User("mod", Privileges.MODERATOR),
-				new User("mod2", Privileges.MODERATOR),
-				new User("admin", Privileges.ADMINISTRATOR) };
-		return users;
+		if (connection == null) {
+			return null;
+		}
+
+		int privileges = Privileges.getInteger(Privileges.MODERATOR);
+		String query = "SELECT username, priv_level FROM users WHERE priv_level <= "
+				+ privileges + ";";
+		Statement statement = connection.getStatement();
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			ArrayList<User> users = new ArrayList<User>();
+			Privileges tempPrivs;
+			String tempName;
+			while (rs.next()) {
+				tempPrivs = Privileges.getPrivilege(rs.getInt("priv_level"));
+				tempName = rs.getString("username");
+				users.add(new User(tempName, tempPrivs));
+			}
+			User[] u = new User[0];
+			return users.toArray(u);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 
 	@Override

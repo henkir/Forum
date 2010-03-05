@@ -10,51 +10,31 @@ public class AdminCategory implements Serializable {
 	private static final long serialVersionUID = -9180699994616026038L;
 	private String name = null;
 	private String description = null;
-	private int position = 0;
+	private int id = 0;
 
 	public AdminCategory() {
 
 	}
 
-	public AdminCategory(String name, String description) {
+	public AdminCategory(int id, String name, String description) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 	}
 
-	public AdminCategory(String name, String description, int position) {
-		this.name = name;
-		this.description = description;
-		this.position = position;
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 
 	/**
-	 * @return the position
+	 * @param id
+	 *            the id to set
 	 */
-	public int getPosition() {
-		return position;
-	}
-
-	/**
-	 * @param position
-	 *            the position to set
-	 */
-	public void setPosition(int position) {
-		this.position = position;
-	}
-
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**
@@ -65,11 +45,26 @@ public class AdminCategory implements Serializable {
 	}
 
 	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
 	 * @param description
 	 *            the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

@@ -8,30 +8,30 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("adminTasks")
 public interface AdminService extends RemoteService {
 
-	// Users
-	User[] getUsers();
-
-	User[] getUsers(String filter);
+	boolean addCategory(AdminCategory category);
 
 	boolean deleteUser(User user);
 
-	boolean updateUser(User user);
+	boolean editCategory(AdminCategory oldCategory, AdminCategory newCategory);
 
 	// Categories
 	AdminCategory[] getCategories();
 
 	AdminCategory[] getCategories(String filter);
 
-	boolean addCategory(AdminCategory category);
+	Privileges getPrivileges();
 
-	boolean editCategory(AdminCategory oldCategory, AdminCategory newCategory);
+	// Users
+	User[] getUsers();
 
-	boolean removeCategory(AdminCategory category);
-
-	boolean setCategoryPosition(AdminCategory category, int position);
+	User[] getUsers(String filter);
 
 	// User checking
 	int hasPrivileges(Privileges privilegeLevel);
 
-	Privileges getPrivileges();
+	boolean removeCategory(AdminCategory category);
+
+	boolean setCategories(AdminCategory[] categories);
+
+	boolean updateUser(User user);
 }

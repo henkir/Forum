@@ -3,17 +3,12 @@ package com.forum.client.admin;
 import com.forum.client.Privileges;
 import com.forum.client.User;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
-import com.smartgwt.client.widgets.grid.events.RowEditorEnterHandler;
-import com.smartgwt.client.widgets.grid.events.RowEditorExitEvent;
-import com.smartgwt.client.widgets.grid.events.RowEditorExitHandler;
 
 /**
  * A subclass of ListGrid specialized in displaying users and allowing the user
@@ -62,37 +57,94 @@ public class UserListGrid extends ListGrid {
 		super();
 		this.adminSvc = adminService;
 
-		createCallbacks();
+		init();
 
+		createCallbacks();
+		adminSvc.getPrivileges(callbackInit);
 	}
 
 	/**
-	 * Initializes the component, setting various properties. The privileges
-	 * decide how high a user can set a users privileges. At the end, it gets
-	 * all users from server.
-	 * 
-	 * @param privileges
-	 *            the users privileges
+	 * Creates the callbacks used.
 	 */
-	private void init(Privileges privileges) {
-		setWidth(220);
-		setHeight(250);
-		setCanEdit(true);
-		setEditByCell(true);
-		setEditEvent(ListGridEditEvent.CLICK);
-		setEmptyMessage("Loading...");
+	private void createCallbacks() {
+		callbackInit = new AsyncCallback<Privileges>() {
 
-		ListGridField usernameField = new ListGridField("Username", 100);
-		usernameField.setCanEdit(false);
-		ListGridField privilegeField = new ListGridField("Privileges", 100);
-		String[] privilegeValues = new String[Privileges.getInteger(privileges) + 1];
-		Privileges[] orderedPrivileges = Privileges.getOrderedArray();
-		for (int i = 0; i < privilegeValues.length; i++) {
-			privilegeValues[i] = orderedPrivileges[i].toString();
-		}
-		privilegeField.setValueMap(privilegeValues);
-		setFields(usernameField, privilegeField);
-		getUsers();
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("Failure1: " + caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Privileges result) {
+				init(result);
+			}
+
+		};
+
+		callbackDeleteUser = new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.out.println("Failure");
+				SC
+						.say("User deletion",
+								"There was an error deleting the user.");
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (result) {
+					adminSvc.getUsers(callbackGetUsers);
+				} else {
+					SC.say("User deletion",
+							"There was an error deleting the user.");
+				}
+			}
+
+		};
+
+		callbackGetUsers = new AsyncCallback<User[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				setEmptyMessage("Failed getting users");
+				System.out.println("Failure2: " + caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(User[] result) {
+				setEmptyMessage("No users");
+				selectAllRecords();
+				removeSelectedData();
+				ListGridRecord record;
+				for (final User user : result) {
+					record = new ListGridRecord();
+					record.setAttribute("userName", user.getName());
+					record.setAttribute("userPrivileges", user.getPrivileges()
+							.toString());
+					record.setAttribute("userChanged", false);
+					addData(record);
+
+				}
+			}
+		};
+
+		callbackUpdateUser = new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				SC.say("Update failed", "Failed to update user.");
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (!result) {
+					SC.say("Update failed", "Failed to update user.");
+				}
+			}
+
+		};
+
 	}
 
 	/**
@@ -130,114 +182,47 @@ public class UserListGrid extends ListGrid {
 	}
 
 	/**
-	 * Creates the callbacks used.
+	 * Initializes the component without knowing the privileges of the user.
 	 */
-	private void createCallbacks() {
-		callbackInit = new AsyncCallback<Privileges>() {
+	private void init() {
+		setCanRemoveRecords(true);
+		setWidth(240);
+		setHeight(250);
+		setCanEdit(true);
+		setEditByCell(true);
+		setEditEvent(ListGridEditEvent.CLICK);
+		setEmptyMessage("Loading...");
+	}
 
-			@Override
-			public void onSuccess(Privileges result) {
-				init(result);
-			}
+	/**
+	 * Initializes the component, setting various properties. The privileges
+	 * decide how high a user can set a users privileges. At the end, it gets
+	 * all users from server.
+	 * 
+	 * @param privileges
+	 *            the users privileges
+	 */
+	private void init(Privileges privileges) {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				System.err.println("Failure1: " + caught.getMessage());
-			}
+		ListGridField usernameField = new ListGridField("userName", "Username",
+				100);
+		usernameField.setCanEdit(false);
+		ListGridField privilegeField = new ListGridField("userPrivileges",
+				"Privileges", 100);
+		String[] privilegeValues = new String[Privileges.getInteger(privileges) + 1];
+		Privileges[] orderedPrivileges = Privileges.getOrderedArray();
+		for (int i = 0; i < privilegeValues.length; i++) {
+			privilegeValues[i] = orderedPrivileges[i].toString();
+		}
+		privilegeField.setValueMap(privilegeValues);
+		ListGridField changedField = new ListGridField("userChanged");
+		changedField.setHidden(true);
+		setFields(usernameField, privilegeField, changedField);
+		getUsers();
+	}
 
-		};
-
-		callbackDeleteUser = new AsyncCallback<Boolean>() {
-
-			@Override
-			public void onSuccess(Boolean result) {
-				if (result) {
-					adminSvc.getUsers(callbackGetUsers);
-				} else {
-					SC.say("User deletion",
-							"There was an error deleting the user.");
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				System.out.println("Failure");
-				SC
-						.say("User deletion",
-								"There was an error deleting the user.");
-			}
-
-		};
-
-		callbackGetUsers = new AsyncCallback<User[]>() {
-
-			@Override
-			public void onSuccess(User[] result) {
-				setEmptyMessage("No users");
-				ListGridRecord record;
-				for (final User user : result) {
-					record = new ListGridRecord();
-					record.setAttribute("Username", user.getName());
-					record.setAttribute("Privileges", user.getPrivileges()
-							.toString());
-					addData(record);
-
-					addRowEditorEnterHandler(new RowEditorEnterHandler() {
-
-						@Override
-						public void onRowEditorEnter(RowEditorEnterEvent event) {
-							currentPrivileges = Privileges.MEMBER;
-							System.out.println("enter");
-						}
-					});
-					addRowEditorExitHandler(new RowEditorExitHandler() {
-
-						@Override
-						public void onRowEditorExit(RowEditorExitEvent event) {
-							if (!event.isCancelled()) {
-								System.out.println("exit");
-								Record record = event.getRecord();
-
-								String username = record
-										.getAttribute("Username");
-								Privileges privileges = Privileges
-										.valueOf(record.getAttribute(
-												"Privileges").toUpperCase());
-								if (currentPrivileges != privileges) {
-									final User user = new User(username,
-											privileges);
-									adminSvc.updateUser(user,
-											callbackUpdateUser);
-								}
-							}
-						}
-					});
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				setEmptyMessage("Failed getting users");
-				System.out.println("Failure2: " + caught.getMessage());
-			}
-		};
-
-		callbackUpdateUser = new AsyncCallback<Boolean>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.say("Update failed", "Failed to update user.");
-			}
-
-			@Override
-			public void onSuccess(Boolean result) {
-				if (!result) {
-					SC.say("Update failed", "Failed to update user.");
-				}
-			}
-
-		};
-
+	public void saveUsers() {
+		// TODO save users
 	}
 
 }

@@ -12,30 +12,30 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface AdminServiceAsync {
 
-	void getUsers(AsyncCallback<User[]> users);
+	void addCategory(AdminCategory category, AsyncCallback<Boolean> callback);
 
-	void getUsers(String filter, AsyncCallback<User[]> users);
+	void deleteUser(User user, AsyncCallback<Boolean> callback);
+
+	void editCategory(AdminCategory oldCategory, AdminCategory newCategory,
+			AsyncCallback<Boolean> callback);
 
 	void getCategories(AsyncCallback<AdminCategory[]> categories);
 
 	void getCategories(String filter, AsyncCallback<AdminCategory[]> categories);
 
-	void deleteUser(User user, AsyncCallback<Boolean> callback);
+	void getPrivileges(AsyncCallback<Privileges> callback);
 
-	void updateUser(User user, AsyncCallback<Boolean> callback);
+	void getUsers(AsyncCallback<User[]> users);
 
-	void addCategory(AdminCategory category, AsyncCallback<Boolean> callback);
-
-	void editCategory(AdminCategory oldCategory, AdminCategory newCategory,
-			AsyncCallback<Boolean> callback);
-
-	void removeCategory(AdminCategory category, AsyncCallback<Boolean> callback);
-
-	void setCategoryPosition(AdminCategory category, int position,
-			AsyncCallback<Boolean> callback);
+	void getUsers(String filter, AsyncCallback<User[]> users);
 
 	void hasPrivileges(Privileges privilegeLevel,
 			AsyncCallback<Integer> callback);
 
-	void getPrivileges(AsyncCallback<Privileges> callback);
+	void removeCategory(AdminCategory category, AsyncCallback<Boolean> callback);
+
+	void setCategories(AdminCategory[] categories,
+			AsyncCallback<Boolean> callback);
+
+	void updateUser(User user, AsyncCallback<Boolean> callback);
 }
