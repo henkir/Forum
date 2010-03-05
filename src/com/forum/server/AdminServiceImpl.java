@@ -6,9 +6,10 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.forum.client.AdminCategory;
-import com.forum.client.AdminService;
+import com.forum.client.Privileges;
 import com.forum.client.User;
+import com.forum.client.admin.AdminCategory;
+import com.forum.client.admin.AdminService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements
@@ -18,9 +19,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	private DatabaseConnection connection = null;
 	private HttpServletRequest request;
 	private HttpSession session;
-
-	private final int editUsersPrivs = 5;
-	private final int editCategoriesPrivs = 3;
 
 	private final int authorized = 2;
 	private final int loggedIn = 1;
@@ -36,7 +34,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean addCategory(AdminCategory category) {
-		if (hasPrivileges(editCategoriesPrivs) == authorized) {
+		if (hasPrivileges(Privileges.MODERATOR) == authorized) {
 			String name = category.getName();
 			String description = category.getDescription();
 			int position = category.getPosition();
@@ -49,8 +47,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean deleteUser(User user) {
-		int privileges = user.getPrivileges();
-		if (hasPrivileges(editUsersPrivs) == authorized
+		Privileges privileges = user.getPrivileges();
+		if (hasPrivileges(Privileges.MODERATOR) == authorized
 				&& hasPrivileges(privileges) == authorized) {
 			String name = user.getName();
 			String query = "DELETE FROM users WHERE name='" + name + "');";
@@ -79,14 +77,13 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean setUser(User user) {
-		// TODO Auto-generated method stub
+	public boolean updateUser(User user) {
 		return false;
 	}
 
 	private boolean queryUpdate(String query) {
 		try {
-			ResultSet rs = connection.getStatement().executeQuery(query);
+			connection.getStatement().executeUpdate(query);
 			return true;
 		} catch (SQLException e) {
 			System.err.println("ERROR: " + e.toString());
@@ -94,8 +91,12 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
+	public Privileges getPrivileges() {
+		return Privileges.MODERATOR;
+	}
+
 	@Override
-	public int hasPrivileges(int privilegeLevel) {
+	public int hasPrivileges(Privileges privilegeLevel) {
 
 		String userId = null; // session.getAttribute("user_id").toString();
 		if (userId == null) {
@@ -107,7 +108,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 					"SELECT priv_level FROM users WHERE id='"
 							+ Integer.parseInt(userId) + "';");
 			if (rs.next()) {
-				if (rs.getInt("priv_level") >= privilegeLevel) {
+				if (rs.getInt("priv_level") >= 2) {
 					return 2;
 				}
 			}
@@ -124,6 +125,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 				new AdminCategory("gay stuff", "you know, like GAY", 1),
 				new AdminCategory("straight stuff???", "NAAAA", 2),
 				new AdminCategory("your mother", "on pizza you know", 3) };
+
 		return categories;
 	}
 
@@ -135,8 +137,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public User[] getUsers() {
-		User[] users = { new User("user", 0), new User("user2", 0),
-				new User("mod", 5), new User("mod2", 5), new User("admin", 9) };
+		User[] users = { new User("user", Privileges.MEMBER),
+				new User("user2", Privileges.MEMBER),
+				new User("mod", Privileges.MODERATOR),
+				new User("mod2", Privileges.MODERATOR),
+				new User("admin", Privileges.ADMINISTRATOR) };
 		return users;
 	}
 

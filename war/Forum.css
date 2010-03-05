@@ -45,3 +45,9 @@ body {
 	color: 0000ff;
 	text-align: left;
 }
+
+/* Admin related */
+.adminTitle {
+	font-size: 200%;
+	font-weight: bold;
+}

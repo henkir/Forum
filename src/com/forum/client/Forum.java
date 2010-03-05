@@ -1,12 +1,12 @@
 package com.forum.client;
 
+import com.forum.client.admin.AdminPanel;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 
@@ -25,12 +25,9 @@ public class Forum implements EntryPoint {
 	Button adminButton = new Button("Admin panel");
 	Button forumButton = new Button("Forum panel");
 
-	AdminPanel adminPanel = new AdminPanel();
-
 	ButtonClickHandler buttonClickHandler = new ButtonClickHandler();
 
 	public void onModuleLoad() {
-
 		// the canvas
 		forumCanvas.setWidth("100%");
 		forumCanvas.setHeight("100%");
@@ -56,20 +53,18 @@ public class Forum implements EntryPoint {
 	}
 
 	private void showAdminPanel() {
-		System.out.println("admin");
 		panel.clear();
 		forumButton = new Button("Forum panel");
 		forumButton.addClickHandler(buttonClickHandler);
 		panel.add(forumButton);
 		panel.add(banner);
-		panel.add(adminPanel);
+		panel.add(new AdminPanel());
 	}
 
 	private class ButtonClickHandler implements ClickHandler {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			System.out.println("CLICK");
 			if (event.getSource() == adminButton) {
 				showAdminPanel();
 			} else if (event.getSource() == forumButton) {
