@@ -4,14 +4,18 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7136270130312848857L;
 	private String name = null;
-	private int privileges = 0;
+	private Privileges privileges = Privileges.MEMBER;
 
 	public User() {
 
 	}
 
-	public User(String name, int privileges) {
+	public User(String name, Privileges privileges) {
 		this.name = name;
 		this.privileges = privileges;
 	}
@@ -34,7 +38,7 @@ public class User implements Serializable {
 	/**
 	 * @return the privileges
 	 */
-	public int getPrivileges() {
+	public Privileges getPrivileges() {
 		return privileges;
 	}
 
@@ -42,7 +46,7 @@ public class User implements Serializable {
 	 * @param privileges
 	 *            the privileges to set
 	 */
-	public void setPrivileges(int privileges) {
+	public void setPrivileges(Privileges privileges) {
 		this.privileges = privileges;
 	}
 
