@@ -1,5 +1,7 @@
 package com.forum.client;
 
+import java.io.Serializable;
+
 import com.google.gwt.dom.client.Text;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -24,7 +26,11 @@ public class AddTopicPanel extends Canvas {
 	private DynamicForm form = new DynamicForm();
 	private IButton submitButton = new IButton("Submit Topic");
 
-	public AddTopicPanel() {
+	public AddTopicPanel(){
+		
+	}
+	
+	public AddTopicPanel(int catID) {
 		// instance
 		super();
 		setCanDragReposition(false);
@@ -64,15 +70,16 @@ public class AddTopicPanel extends Canvas {
 			public void onClick(ClickEvent event) {
 				String topicName = form.getValue("textField").toString();
 				String text = rtEditor.getValue();
-				System.out.println(topicName);
+				System.out.println(text);
 				if(topicName.equals("")){
-					System.out.println("bög");
 					SC.say("Topic name cannot be empty");
-					return;
+					form.setValue("textField", "");
+
 				}
-				if(text.equals("")){
+				if(text.equals("<br>")){
 					SC.say("Post cannot be empty");
-					return;
+					rtEditor.setValue("");
+
 				}
 				
 			}

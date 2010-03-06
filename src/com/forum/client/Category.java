@@ -2,9 +2,6 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
-import org.apache.tools.ant.taskdefs.FixCRLF.AddAsisRemove;
-
-import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -18,13 +15,18 @@ public class Category extends Canvas {
 	private Label title;
 	private Canvas parent;
 	private ArrayList<Label> labels = new ArrayList<Label>();
-	private IButton addThreadButton = new IButton("Add Topic");
-
+	//private IButton addThreadButton = new IButton("Add Topic");
+	private int catid;
 	private int currentHeight = 0;
 	private ForumThread currentThread = null;
 
-	public Category(String name, final Canvas parent) {
+	
+	public Category(){
+		
+	}
+	public Category(String name, int id, final Canvas parent) {
 		super();
+
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setWidth(600);
@@ -33,7 +35,7 @@ public class Category extends Canvas {
 		setBorder("1px solid #000000");
 		this.name = name;
 		this.parent = parent;
-
+		this.catid = id;
 		// title label
 		title = new Label("<div class='categoryTitle'>" + name
 				+ " TopiXX</div>");
@@ -54,23 +56,23 @@ public class Category extends Canvas {
 		addChild(title);
 		currentHeight += title.getHeight();
 		// button
-		addThreadButton.setTop(currentHeight);
-		currentHeight += addThreadButton.getHeight();
-		addThreadButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				if (!hidden) {
-					AddTopicPanel panel = new AddTopicPanel();
-					panel.setTop(0);
-					panel.setLeft(500);
-					hide();
-					parent.addChild(panel);
-				}
-			}
-		});
-		addChild(addThreadButton);
+		//addThreadButton.setTop(currentHeight);
+	//	currentHeight += addThreadButton.getHeight();
+		//addThreadButton.addClickHandler(new ClickHandler() {
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				// TODO Auto-generated method stub
+//				if (!hidden) {
+//					AddTopicPanel panel = new AddTopicPanel(catid);
+//					panel.setTop(0);
+//					panel.setLeft(500);
+//					hide();
+//					parent.addChild(panel);
+//				}
+//			}
+//		});
+//		addChild(addThreadButton);
 	}
 
 	private void killThread() {
