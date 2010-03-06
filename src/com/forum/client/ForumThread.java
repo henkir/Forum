@@ -117,6 +117,7 @@ public class ForumThread {
 		}
 		tail.setTop(currentHeight);
 		tail.setLeft(500);
+		tail.setVisible(true);
 		parent.addChild(tail);
 
 	}
@@ -128,5 +129,7 @@ public class ForumThread {
 			p.setVisible(false);
 			parent.removeChild(p);
 		}
+		parent.removeChild(tail);
+		tail.setVisible(false);
 	}
 }

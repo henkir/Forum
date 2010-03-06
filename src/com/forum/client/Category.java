@@ -2,7 +2,11 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
+import org.apache.tools.ant.taskdefs.FixCRLF.AddAsisRemove;
+
+import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -14,18 +18,23 @@ public class Category extends Canvas {
 	private Label title;
 	private Canvas parent;
 	private ArrayList<Label> labels = new ArrayList<Label>();
+	private IButton addThreadButton = new IButton("Add Topic");
 
 	private int currentHeight = 0;
 	private ForumThread currentThread = null;
 
-	public Category(String name, Canvas parent) {
+	public Category(String name, final Canvas parent) {
 		super();
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setWidth(600);
 		setHeight(10);
+		setBackgroundColor("#b0f963");
+		setBorder("1px solid #000000");
 		this.name = name;
 		this.parent = parent;
+
+		// title label
 		title = new Label("<div class='categoryTitle'>" + name
 				+ " TopiXX</div>");
 		title.setTop(currentHeight);
@@ -44,11 +53,24 @@ public class Category extends Canvas {
 		});
 		addChild(title);
 		currentHeight += title.getHeight();
+		// button
+		addThreadButton.setTop(currentHeight);
+		currentHeight += addThreadButton.getHeight();
+		addThreadButton.addClickHandler(new ClickHandler() {
 
-		setBackgroundColor("#b0f963");
-		setBorder("1px solid #000000");
-
-		addThread(new ForumThread("Henkes Penis", parent));
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				if (!hidden) {
+					AddTopicPanel panel = new AddTopicPanel();
+					panel.setTop(0);
+					panel.setLeft(500);
+					hide();
+					parent.addChild(panel);
+				}
+			}
+		});
+		addChild(addThreadButton);
 	}
 
 	private void killThread() {
