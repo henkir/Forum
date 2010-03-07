@@ -14,24 +14,27 @@ public interface AdminService extends RemoteService {
 
 	boolean editCategory(AdminCategory oldCategory, AdminCategory newCategory);
 
-	// Categories
 	AdminCategory[] getCategories();
 
 	AdminCategory[] getCategories(String filter);
 
 	Privileges getPrivileges();
 
-	// Users
 	User[] getUsers();
 
 	User[] getUsers(String filter);
 
-	// User checking
 	int hasPrivileges(Privileges privilegeLevel);
 
 	boolean removeCategory(AdminCategory category);
 
 	boolean setCategories(AdminCategory[] categories);
 
+	boolean setUsers(User[] users);
+
 	boolean updateUser(User user);
+
+	boolean logIn(String username, String password);
+
+	void logOut();
 }

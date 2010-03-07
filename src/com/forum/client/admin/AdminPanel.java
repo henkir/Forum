@@ -12,6 +12,8 @@ import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
 import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.layout.VStack;
@@ -38,11 +40,11 @@ public class AdminPanel extends Canvas {
 	/**
 	 * A list of users.
 	 */
-	private final UserListGrid users = new UserListGrid(adminSvc);
+	private UserListGrid users;
 	/**
 	 * A list of categories.
 	 */
-	private final CategoryListGrid categories = new CategoryListGrid(adminSvc);
+	private CategoryListGrid categories;
 	/**
 	 * This is shown when the user is being authorized.
 	 */
@@ -87,6 +89,11 @@ public class AdminPanel extends Canvas {
 	 * Spacer label for increasing distances.
 	 */
 	private Label spacerCategories = new Label();
+	/**
+	 * Window for displaying information if the user is not logged in or not
+	 * authorized.
+	 */
+	private Window window;
 
 	/**
 	 * Checks if a user is logged in and if he has privileges to access the
@@ -202,7 +209,8 @@ public class AdminPanel extends Canvas {
 	 * Initializes all the components.
 	 */
 	private void init() {
-
+		users = new UserListGrid(adminSvc);
+		categories = new CategoryListGrid(adminSvc);
 		// Edit users
 
 		// Label
@@ -212,20 +220,26 @@ public class AdminPanel extends Canvas {
 
 		// Delete button
 		saveUsers.setIcon("save.png");
+		// saveUsers.setDisabled(true);
 		saveUsers.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				users.saveUsers();
+				// saveUsers.setDisabled(true);
+				// undoUsers.setDisabled(true);
 			}
 		});
 
 		undoUsers.setIcon("undo.png");
+		// undoUsers.setDisabled(true);
 		undoUsers.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				users.getUsers();
+				// saveUsers.setDisabled(true);
+				// undoUsers.setDisabled(true);
 			}
 		});
 		// Edit categories
@@ -247,20 +261,44 @@ public class AdminPanel extends Canvas {
 		});
 
 		saveCategories.setIcon("save.png");
+		// saveCategories.setDisabled(true);
 		saveCategories.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				categories.saveCategories();
+				// saveCategories.setDisabled(true);
+				// undoCategories.setDisabled(true);
 			}
 		});
 
 		undoCategories.setIcon("undo.png");
+		// undoCategories.setDisabled(true);
 		undoCategories.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				categories.getCategories();
+				// saveCategories.setDisabled(true);
+				// undoCategories.setDisabled(true);
+			}
+		});
+
+		users.addEditCompleteHandler(new EditCompleteHandler() {
+
+			@Override
+			public void onEditComplete(EditCompleteEvent event) {
+				saveUsers.setDisabled(false);
+				undoUsers.setDisabled(false);
+			}
+		});
+
+		categories.addEditCompleteHandler(new EditCompleteHandler() {
+
+			@Override
+			public void onEditComplete(EditCompleteEvent event) {
+				saveCategories.setDisabled(false);
+				undoCategories.setDisabled(false);
 			}
 		});
 
@@ -275,15 +313,20 @@ public class AdminPanel extends Canvas {
 		Label instructionLabel = new Label(
 				"This area requires authorization. Please log in.");
 		instructionLabel.setAutoHeight();
-		IButton returnButton = new IButton("Go back");
 		VLayout layout = new VLayout(10);
 		layout.addMember(instructionLabel);
-		layout.addMember(new LoginForm());
-		layout.addMember(returnButton);
-		Window window = createNotificationWindow("Log in");
+		layout.addMember(new LoginForm(adminSvc, this));
+		window = createNotificationWindow("Log in");
 		window.addItem(layout);
 		window.draw();
 		window.animateResize(300, 200);
+	}
+
+	public void reload() {
+		adminSvc.hasPrivileges(Privileges.MODERATOR, callbackAuthorize);
+		if (window != null) {
+			window.hide();
+		}
 	}
 
 	/**
@@ -294,10 +337,8 @@ public class AdminPanel extends Canvas {
 		Label notAuthorizedLabel = new Label(
 				"You are not authorized to view this area.");
 		notAuthorizedLabel.setAutoHeight();
-		IButton returnButton = new IButton("Go back");
-		Window window = createNotificationWindow("Not authorized");
+		window = createNotificationWindow("Not authorized");
 		window.addItem(notAuthorizedLabel);
-		window.addItem(returnButton);
 		window.show();
 	}
 

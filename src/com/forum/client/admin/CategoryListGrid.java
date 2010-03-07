@@ -3,6 +3,7 @@ package com.forum.client.admin;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.form.validator.LengthRangeValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -24,11 +25,11 @@ public class CategoryListGrid extends ListGrid {
 	/**
 	 * Callback for getting all categories.
 	 */
-	private AsyncCallback<AdminCategory[]> callbackCategories;
+	private AsyncCallback<AdminCategory[]> callbackGetCategories;
 	/**
 	 * Callback for setting position of a category.
 	 */
-	private AsyncCallback<Boolean> setCategories;
+	private AsyncCallback<Boolean> callbackSetCategories;
 
 	/**
 	 * Creates a new CategoryListGrid that uses the given service to communicate
@@ -50,7 +51,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Create the callbacks used.
 	 */
 	private void createCallbacks() {
-		callbackCategories = new AsyncCallback<AdminCategory[]>() {
+		callbackGetCategories = new AsyncCallback<AdminCategory[]>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -60,35 +61,39 @@ public class CategoryListGrid extends ListGrid {
 
 			@Override
 			public void onSuccess(AdminCategory[] result) {
-				setEmptyMessage("No categories");
-				selectAllRecords();
-				removeSelectedData();
-				ListGridRecord record;
-				for (AdminCategory category : result) {
-					record = new ListGridRecord();
-					record.setAttribute("categoryId", category.getId());
-					record.setAttribute("categoryName", category.getName());
-					record.setAttribute("categoryDescription", category
-							.getDescription());
-					addData(record);
+				if (result != null) {
+					setEmptyMessage("No categories");
+					selectAllRecords();
+					removeSelectedData();
+					ListGridRecord record;
+					for (AdminCategory category : result) {
+						record = new ListGridRecord();
+						record.setAttribute("categoryId", category.getId());
+						record.setAttribute("categoryName", category.getName());
+						record.setAttribute("categoryDescription", category
+								.getDescription());
+						addData(record);
+					}
+				} else {
+					setEmptyMessage("Failed getting categories.");
 				}
 			}
 		};
 
-		setCategories = new AsyncCallback<Boolean>() {
-
-			@Override
-			public void onSuccess(Boolean result) {
-				if (!result) {
-					adminSvc.getCategories(callbackCategories);
-					SC.say("Update failure", "Failed to update categories.");
-				}
-			}
+		callbackSetCategories = new AsyncCallback<Boolean>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				SC.say("Update failure",
 						"Failed to update order of categories.");
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (!result) {
+					adminSvc.getCategories(callbackGetCategories);
+					SC.say("Update failure", "Failed to update categories.");
+				}
 			}
 		};
 	}
@@ -97,7 +102,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Get all categories.
 	 */
 	public void getCategories() {
-		adminSvc.getCategories(callbackCategories);
+		adminSvc.getCategories(callbackGetCategories);
 	}
 
 	/**
@@ -120,9 +125,22 @@ public class CategoryListGrid extends ListGrid {
 		ListGridField descriptionField = new ListGridField(
 				"categoryDescription", "Description", 300);
 		setFields(categoryField, descriptionField);
+		categoryField.setValidateOnChange(true);
+		LengthRangeValidator categoryValidator = new LengthRangeValidator();
+		categoryValidator.setMin(3);
+		categoryValidator.setMax(20);
+		categoryField.setValidators(categoryValidator);
+
+		LengthRangeValidator descriptionValidator = new LengthRangeValidator();
+		descriptionValidator.setMin(0);
+		descriptionValidator.setMax(100);
+		descriptionField.setValidators(descriptionValidator);
 
 	}
 
+	/**
+	 * Saves the categories as they currently are.
+	 */
 	public void saveCategories() {
 		ListGridRecord[] records = getRecords();
 		AdminCategory[] cats = new AdminCategory[records.length];
@@ -135,6 +153,7 @@ public class CategoryListGrid extends ListGrid {
 			description = records[i].getAttribute("categoryDescription");
 			cats[i] = new AdminCategory(id, name, description);
 		}
-		adminSvc.setCategories(cats, setCategories);
+		adminSvc.setCategories(cats, callbackSetCategories);
 	}
+
 }
