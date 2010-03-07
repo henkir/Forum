@@ -9,6 +9,8 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
 
 /**
  * A subclass of ListGrid specialized in displaying users and allowing the user
@@ -37,14 +39,9 @@ public class UserListGrid extends ListGrid {
 	 */
 	private AsyncCallback<User[]> callbackGetUsers;
 	/**
-	 * Callback for updating a user.
+	 * Callback for setting users.
 	 */
-	private AsyncCallback<Boolean> callbackUpdateUser;
-
-	/**
-	 * The privileges of the currently selected user.
-	 */
-	private Privileges currentPrivileges;
+	private AsyncCallback<Boolean> callbackSetUsers;
 
 	/**
 	 * Creates a new UserListGrid that uses the given service to communicate
@@ -81,28 +78,6 @@ public class UserListGrid extends ListGrid {
 
 		};
 
-		callbackDeleteUser = new AsyncCallback<Boolean>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				System.out.println("Failure");
-				SC
-						.say("User deletion",
-								"There was an error deleting the user.");
-			}
-
-			@Override
-			public void onSuccess(Boolean result) {
-				if (result) {
-					adminSvc.getUsers(callbackGetUsers);
-				} else {
-					SC.say("User deletion",
-							"There was an error deleting the user.");
-				}
-			}
-
-		};
-
 		callbackGetUsers = new AsyncCallback<User[]>() {
 
 			@Override
@@ -113,36 +88,40 @@ public class UserListGrid extends ListGrid {
 
 			@Override
 			public void onSuccess(User[] result) {
-				setEmptyMessage("No users");
-				selectAllRecords();
-				removeSelectedData();
-				ListGridRecord record;
-				for (final User user : result) {
-					record = new ListGridRecord();
-					record.setAttribute("userName", user.getName());
-					record.setAttribute("userPrivileges", user.getPrivileges()
-							.toString());
-					record.setAttribute("userChanged", false);
-					addData(record);
+				if (result != null) {
+					setEmptyMessage("No users");
+					selectAllRecords();
+					removeSelectedData();
+					ListGridRecord record;
+					for (final User user : result) {
+						record = new ListGridRecord();
+						record.setAttribute("userName", user.getName());
+						record.setAttribute("userPrivileges", user
+								.getPrivileges().toString());
+						record.setAttribute("userChanged", false);
+						addData(record);
 
+					}
+				} else {
+					setEmptyMessage("Failed getting users");
 				}
 			}
 		};
 
-		callbackUpdateUser = new AsyncCallback<Boolean>() {
+		callbackSetUsers = new AsyncCallback<Boolean>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				SC.say("Update failed", "Failed to update user.");
+				SC.say("Update failure", "Failed to update order of users.");
 			}
 
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					SC.say("Update failed", "Failed to update user.");
+					adminSvc.getUsers(callbackGetUsers);
+					SC.say("Update failure", "Failed to update users.");
 				}
 			}
-
 		};
 
 	}
@@ -219,10 +198,38 @@ public class UserListGrid extends ListGrid {
 		changedField.setHidden(true);
 		setFields(usernameField, privilegeField, changedField);
 		getUsers();
+
+		addEditCompleteHandler(new EditCompleteHandler() {
+
+			@Override
+			public void onEditComplete(EditCompleteEvent event) {
+				ListGridRecord record = getRecord(event.getRowNum());
+				record.setAttribute("userChanged", true);
+			}
+		});
 	}
 
+	/**
+	 * Saves the current users.
+	 */
 	public void saveUsers() {
-		// TODO save users
+		ListGridRecord[] records = getRecords();
+		User[] users = new User[records.length];
+		User user;
+		String name;
+		Privileges privileges;
+		boolean changed;
+
+		for (int i = 0; i < records.length; i++) {
+			name = records[i].getAttribute("userName");
+			privileges = Privileges.valueOf(records[i].getAttribute(
+					"userPrivileges").toUpperCase());
+			changed = records[i].getAttributeAsBoolean("userChanged");
+			user = new User(name, privileges, changed);
+			users[i] = user;
+		}
+
+		adminSvc.setUsers(users, callbackSetUsers);
 	}
 
 }

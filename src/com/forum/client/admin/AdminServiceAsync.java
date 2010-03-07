@@ -29,6 +29,8 @@ public interface AdminServiceAsync {
 
 	void getUsers(String filter, AsyncCallback<User[]> users);
 
+	void setUsers(User[] users, AsyncCallback<Boolean> callback);
+
 	void hasPrivileges(Privileges privilegeLevel,
 			AsyncCallback<Integer> callback);
 
@@ -38,4 +40,8 @@ public interface AdminServiceAsync {
 			AsyncCallback<Boolean> callback);
 
 	void updateUser(User user, AsyncCallback<Boolean> callback);
+
+	void logIn(String username, String password, AsyncCallback<Boolean> callback);
+
+	void logOut(AsyncCallback<Void> callback);
 }

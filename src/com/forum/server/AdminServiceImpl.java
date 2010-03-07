@@ -19,20 +19,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		AdminService {
 
 	private static final long serialVersionUID = 7552004959637612351L;
-	private DatabaseConnection connection = null;
+	private DatabaseConnection connection = new DatabaseConnection(true);
+	private LoginHandler loginHandler = LoginHandler.getInstance();
 	private HttpServletRequest request;
 	private HttpSession session;
-
+	private String test;
 	private final int authorized = 2;
 	private final int loggedIn = 1;
 	private final int notLoggedIn = 0;
 
 	public AdminServiceImpl() {
-		// super();
-		// request = this.getThreadLocalRequest();
-		// System.out.println("request " + request);
-		// session = request.getSession();
-		connection = new DatabaseConnection(true);
+
 	}
 
 	@Override
@@ -67,75 +64,98 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean removeCategory(AdminCategory category) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public AdminCategory[] getCategories() {
+		if (hasPrivileges(Privileges.MODERATOR) == 2) {
+			if (connection == null) {
+				return null;
+			}
 
-	@Override
-	public boolean setCategories(AdminCategory[] categories) {
-		String querySelect = "";
-		String queryDelete = "";
-		String queryInsert = "";
-		String queryUpdate = "";
-		String querySelect2 = "";
-
-		try {
+			String query = "SELECT id, name, description, position FROM categories ORDER BY position;";
 			Statement statement = connection.getStatement();
-			String name;
-			String description;
-
-			ResultSet rs;
-			querySelect = "SELECT id FROM categories;";
-			rs = statement.executeQuery(querySelect);
-			int tempId;
-			boolean remove;
-			while (rs.next()) {
-				remove = true;
-				tempId = rs.getInt("id");
-				if (tempId > 0) {
-					for (int i = 0; i < categories.length; i++) {
-						if (tempId == categories[i].getId()) {
-							remove = false;
-							break;
-						}
-					}
-					if (remove) {
-						queryDelete = "DELETE FROM categories WHERE id = "
-								+ tempId + ";";
-						statement.executeUpdate(queryDelete);
-					}
+			try {
+				ResultSet rs = statement.executeQuery(query);
+				ArrayList<AdminCategory> categories = new ArrayList<AdminCategory>();
+				String tempDescription;
+				String tempName;
+				int tempId;
+				int tempPos;
+				while (rs.next()) {
+					tempId = rs.getInt("id");
+					tempDescription = rs.getString("description");
+					tempName = rs.getString("name");
+					categories.add(new AdminCategory(tempId, tempName,
+							tempDescription));
 				}
-			}
-			for (int i = 0; i < categories.length; i++) {
-				name = categories[i].getName();
-				description = categories[i].getDescription();
-				querySelect2 = "SELECT id FROM categories WHERE name = '"
-						+ name + "';";
-				rs = statement.executeQuery(querySelect2);
-				if (rs.next()) {
-					queryUpdate = "UPDATE categories SET name = '" + name
-							+ "', description = '" + description
-							+ "', position = " + (i + 1) + " WHERE id = "
-							+ categories[i].getId() + ";";
-					statement.executeUpdate(queryUpdate);
-				} else {
-					queryInsert = "INSERT INTO categories(name, description, position) VALUES('"
-							+ name + "', '" + description + "', " + i + ");";
-					statement.executeUpdate(queryInsert);
-				}
+				AdminCategory[] c = new AdminCategory[0];
+				return categories.toArray(c);
+			} catch (SQLException e) {
+				e.printStackTrace();
 
 			}
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean updateUser(User user) {
-		return false;
+	public AdminCategory[] getCategories(String filter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Privileges getPrivileges() {
+		return Privileges.MODERATOR;
+	}
+
+	@Override
+	public User[] getUsers() {
+		if (hasPrivileges(Privileges.MODERATOR) == 2) {
+			if (connection == null) {
+				return null;
+			}
+
+			int privileges = Privileges.getInteger(loginHandler
+					.getLoggedInUser().getPrivileges());
+			String query = "SELECT username, priv_level FROM users WHERE priv_level <= "
+					+ privileges + ";";
+			Statement statement = connection.getStatement();
+			try {
+				ResultSet rs = statement.executeQuery(query);
+				ArrayList<User> users = new ArrayList<User>();
+				Privileges tempPrivs;
+				String tempName;
+				while (rs.next()) {
+					tempPrivs = Privileges
+							.getPrivilege(rs.getInt("priv_level"));
+					tempName = rs.getString("username");
+					users.add(new User(tempName, tempPrivs));
+				}
+				User[] u = new User[0];
+				return users.toArray(u);
+			} catch (SQLException e) {
+				e.printStackTrace();
+
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public User[] getUsers(String filter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int hasPrivileges(Privileges privilegeLevel) {
+		if (loginHandler.isLoggedIn()) {
+			User user = loginHandler.getLoggedInUser();
+			if (Privileges.getInteger(user.getPrivileges()) >= Privileges
+					.getInteger(privilegeLevel)) {
+				return 2;
+			}
+			return 1;
+		}
+		return 0;
 	}
 
 	private boolean queryUpdate(String query) {
@@ -148,104 +168,150 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	public Privileges getPrivileges() {
-		return Privileges.MODERATOR;
+	@Override
+	public boolean removeCategory(AdminCategory category) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	public int hasPrivileges(Privileges privilegeLevel) {
+	public boolean setCategories(AdminCategory[] categories) {
+		if (hasPrivileges(Privileges.MODERATOR) == 2) {
+			String querySelect = "";
+			String queryDelete = "";
+			String queryInsert = "";
+			String queryUpdate = "";
+			String querySelect2 = "";
 
-		String userId = null; // session.getAttribute("user_id").toString();
-		if (userId == null) {
-			return 2;
-		}
+			try {
+				Statement statement = connection.getStatement();
+				String name;
+				String description;
 
-		try {
-			ResultSet rs = connection.getStatement().executeQuery(
-					"SELECT priv_level FROM users WHERE id='"
-							+ Integer.parseInt(userId) + "';");
-			if (rs.next()) {
-				if (rs.getInt("priv_level") >= 2) {
-					return 2;
+				ResultSet rs;
+				querySelect = "SELECT id FROM categories;";
+				rs = statement.executeQuery(querySelect);
+				int tempId;
+				boolean remove;
+				while (rs.next()) {
+					remove = true;
+					tempId = rs.getInt("id");
+					if (tempId > 0) {
+						for (int i = 0; i < categories.length; i++) {
+							if (tempId == categories[i].getId()) {
+								remove = false;
+								break;
+							}
+						}
+						if (remove) {
+							queryDelete = "DELETE FROM categories WHERE id = "
+									+ tempId + ";";
+							statement.executeUpdate(queryDelete);
+						}
+					}
 				}
+				for (int i = 0; i < categories.length; i++) {
+					name = categories[i].getName();
+					description = categories[i].getDescription();
+					if (name.length() >= 3 && name.length() <= 20
+							&& description.length() <= 100) {
+						querySelect2 = "SELECT id FROM categories WHERE name = '"
+								+ name + "';";
+						rs = statement.executeQuery(querySelect2);
+						if (rs.next()) {
+							queryUpdate = "UPDATE categories SET name = '"
+									+ name + "', description = '" + description
+									+ "', position = " + (i + 1)
+									+ " WHERE id = " + categories[i].getId()
+									+ ";";
+							statement.executeUpdate(queryUpdate);
+						} else {
+							queryInsert = "INSERT INTO categories(name, description, position) VALUES('"
+									+ name
+									+ "', '"
+									+ description
+									+ "', "
+									+ i
+									+ ");";
+							statement.executeUpdate(queryInsert);
+						}
+					}
+				}
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			System.err.println("ERROR: " + e.toString());
-			return 0;
 		}
-		return 0;
+		return false;
 	}
 
-	@Override
-	public AdminCategory[] getCategories() {
-		if (connection == null) {
-			return null;
-		}
+	public boolean setUsers(User[] users) {
+		if (hasPrivileges(Privileges.MODERATOR) == 2) {
+			String querySelect = "";
+			String queryDelete = "";
+			String queryUpdate = "";
 
-		String query = "SELECT id, name, description, position FROM categories ORDER BY position;";
-		Statement statement = connection.getStatement();
-		try {
-			ResultSet rs = statement.executeQuery(query);
-			ArrayList<AdminCategory> categories = new ArrayList<AdminCategory>();
-			String tempDescription;
-			String tempName;
-			int tempId;
-			int tempPos;
-			while (rs.next()) {
-				tempId = rs.getInt("id");
-				tempDescription = rs.getString("description");
-				tempName = rs.getString("name");
-				categories.add(new AdminCategory(tempId, tempName,
-						tempDescription));
+			try {
+				Statement statement = connection.getStatement();
+				String name;
+				Privileges privileges;
+				int curPrivs = Privileges.getInteger(loginHandler
+						.getLoggedInUser().getPrivileges());
+				ResultSet rs;
+				querySelect = "SELECT username FROM users WHERE priv_level <= "
+						+ curPrivs + ";";
+				rs = statement.executeQuery(querySelect);
+				String tempName;
+				boolean remove;
+				while (rs.next()) {
+					remove = true;
+					tempName = rs.getString("username");
+
+					for (int i = 0; i < users.length; i++) {
+						if (tempName.equals(users[i].getName())) {
+							remove = false;
+							break;
+						}
+					}
+					if (remove) {
+						queryDelete = "DELETE FROM users WHERE username = '"
+								+ tempName + "';";
+						statement.executeUpdate(queryDelete);
+					}
+				}
+				boolean edited;
+				for (int i = 0; i < users.length; i++) {
+					edited = users[i].isChanged();
+					if (edited) {
+						name = users[i].getName();
+						privileges = users[i].getPrivileges();
+						queryUpdate = "UPDATE users SET priv_level = "
+								+ Privileges.getInteger(privileges)
+								+ " WHERE username = '" + name + "';";
+						statement.executeUpdate(queryUpdate);
+					}
+
+				}
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-			AdminCategory[] c = new AdminCategory[0];
-			return categories.toArray(c);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
 		}
-
+		return false;
 	}
 
 	@Override
-	public AdminCategory[] getCategories(String filter) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean updateUser(User user) {
+		return false;
 	}
 
-	@Override
-	public User[] getUsers() {
-		if (connection == null) {
-			return null;
-		}
+	public boolean logIn(String username, String password) {
 
-		int privileges = Privileges.getInteger(Privileges.MODERATOR);
-		String query = "SELECT username, priv_level FROM users WHERE priv_level <= "
-				+ privileges + ";";
-		Statement statement = connection.getStatement();
-		try {
-			ResultSet rs = statement.executeQuery(query);
-			ArrayList<User> users = new ArrayList<User>();
-			Privileges tempPrivs;
-			String tempName;
-			while (rs.next()) {
-				tempPrivs = Privileges.getPrivilege(rs.getInt("priv_level"));
-				tempName = rs.getString("username");
-				users.add(new User(tempName, tempPrivs));
-			}
-			User[] u = new User[0];
-			return users.toArray(u);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-
+		return loginHandler.logIn(username, password);
 	}
 
-	@Override
-	public User[] getUsers(String filter) {
-		// TODO Auto-generated method stub
-		return null;
+	public void logOut() {
+		loginHandler.logOut();
 	}
 
 }
