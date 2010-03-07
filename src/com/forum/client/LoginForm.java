@@ -1,6 +1,9 @@
 package com.forum.client;
 
-import com.smartgwt.client.types.Alignment;
+import com.forum.client.admin.AdminPanel;
+import com.forum.client.admin.AdminServiceAsync;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
@@ -13,14 +16,24 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 public class LoginForm extends DynamicForm {
 
-	public LoginForm() {
+	private AdminServiceAsync adminSvc;
+	private AsyncCallback<Boolean> callbackLogin;
+	private AdminPanel adminPanel;
+
+	private TextItem usernameItem = new TextItem();
+	private PasswordItem passwordItem = new PasswordItem();
+
+	public LoginForm(AdminServiceAsync adminService, AdminPanel adminPanel) {
+		this.adminSvc = adminService;
+		this.adminPanel = adminPanel;
+		createCallbacks();
+
 		setDataSource(new LoginDataSource());
 		setUseAllDataSourceFields(false);
 
 		HeaderItem header = new HeaderItem();
 		header.setDefaultValue("Log in");
 
-		TextItem usernameItem = new TextItem();
 		usernameItem.setName("username");
 
 		usernameItem.addKeyPressHandler(new KeyPressHandler() {
@@ -33,7 +46,6 @@ public class LoginForm extends DynamicForm {
 			}
 		});
 
-		PasswordItem passwordItem = new PasswordItem();
 		passwordItem.setName("password");
 		passwordItem.addKeyPressHandler(new KeyPressHandler() {
 
@@ -46,22 +58,52 @@ public class LoginForm extends DynamicForm {
 		});
 
 		ButtonItem loginItem = new ButtonItem("loginButton", "Log in");
+		loginItem.setWidth(70);
+
 		loginItem.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				validateAndSubmit();
+				if (validate()) {
+					submit();
+				}
 			}
 		});
-		setAlign(Alignment.RIGHT);
+
 		setFields(header, usernameItem, passwordItem, loginItem);
+	}
+
+	private void createCallbacks() {
+		callbackLogin = new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (result) {
+					adminPanel.reload();
+				} else {
+					SC.say("Mismatching cresidentials",
+							"Username and password do not match.");
+					usernameItem.getDisplayValue("");
+					passwordItem.getDisplayValue("");
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				SC.say("Failure", "Failed to log in.");
+			}
+		};
 	}
 
 	private void validateAndSubmit() {
 		if (validate()) {
-			// TODO actually login
 			submit();
 		}
+	}
+
+	public void submit() {
+		adminSvc.logIn(usernameItem.getDisplayValue(), passwordItem
+				.getDisplayValue(), callbackLogin);
 	}
 
 }
