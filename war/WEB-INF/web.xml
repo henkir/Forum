@@ -16,6 +16,15 @@
     <url-pattern>/forum/adminTasks</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>ForumServiceImpl</servlet-name>
+    <servlet-class>com.forum.server.ForumServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ForumServiceImpl</servlet-name>
+    <url-pattern>/forum/forumTasks</url-pattern>
+  </servlet-mapping>
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Forum.html</welcome-file>
