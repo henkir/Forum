@@ -81,18 +81,17 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 		
 		ArrayList<PostData> result = new ArrayList<PostData>();
 		ResultSet rs;
-		String query = "SELECT t1.time_posted, t1.post, t2.username AS author FROM posts AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.topic_id = '" + threadID +"' ORDER BY t1.time_posted;";
+		String query = "SELECT t1.id, t1.time_posted, t1.post, t2.id AS author FROM posts AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.topic_id = '" + threadID +"' ORDER BY t1.time_posted;";
 		Statement statement = connection.getStatement();
 		try {
 			rs = statement.executeQuery(query);
 			while(rs.next()){
-				String date = rs.getString("date");
+				String date = rs.getString("time_posted");
 				String text = rs.getString("post");
 				long id = rs.getLong("id");
-				int thID = rs.getInt("topic_id");
-				int authID = rs.getInt("author_id");
+				int authID = rs.getInt("author");
 			
-				result.add(new PostData(id, thID, authID, date, text));
+				result.add(new PostData(id, threadID, authID, date, text));
 			}
 		} catch (SQLException e) {
 			
@@ -105,7 +104,7 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	public TopicData[] getThreads(int categoryID) {
 		ArrayList<TopicData> result = new ArrayList<TopicData>();
 		ResultSet rs;
-		String query = "SELECT t1.name, t1.time_created, t2.username AS author FROM topics AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.category_id = '" + categoryID +"' ORDER BY t1.time_created;";
+		String query = "SELECT t1.id, t1.name, t1.time_created,t1.category_id, t2.id AS author FROM topics AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.category_id = '" + categoryID +"' ORDER BY t1.time_created;";
 		Statement statement = connection.getStatement();
 		try {
 			rs = statement.executeQuery(query);
@@ -114,7 +113,7 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 				String name = rs.getString("name");
 				int id = rs.getInt("id");
 				int catID = rs.getInt("category_id");
-				int authID = rs.getInt("author_id");
+				int authID = rs.getInt("author");
 				result.add(new TopicData(id, catID, authID, name, date));
 			}
 		} catch (SQLException e) {

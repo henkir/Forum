@@ -2,6 +2,9 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
+import com.forum.client.data.TopicData;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -10,20 +13,18 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 
 public class Category extends Canvas {
 
+	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
 	private boolean hidden = true;
 	private String name = "";
 	private Label title;
 	private Canvas parent;
 	private ArrayList<Label> labels = new ArrayList<Label>();
-	//private IButton addThreadButton = new IButton("Add Topic");
+	private ArrayList<Integer> topics = new ArrayList<Integer>();
+	private IButton addThreadButton = new IButton("Add Topic");
 	private int catid;
 	private int currentHeight = 0;
 	private ForumThread currentThread = null;
 
-	
-	public Category(){
-		
-	}
 	public Category(String name, int id, final Canvas parent) {
 		super();
 
@@ -56,23 +57,56 @@ public class Category extends Canvas {
 		addChild(title);
 		currentHeight += title.getHeight();
 		// button
-		//addThreadButton.setTop(currentHeight);
-	//	currentHeight += addThreadButton.getHeight();
-		//addThreadButton.addClickHandler(new ClickHandler() {
-//
-//			@Override
-//			public void onClick(ClickEvent event) {
-//				// TODO Auto-generated method stub
-//				if (!hidden) {
-//					AddTopicPanel panel = new AddTopicPanel(catid);
-//					panel.setTop(0);
-//					panel.setLeft(500);
-//					hide();
-//					parent.addChild(panel);
-//				}
-//			}
-//		});
-//		addChild(addThreadButton);
+		addThreadButton.setTop(currentHeight);
+		currentHeight += addThreadButton.getHeight();
+		addThreadButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				if (!hidden) {
+					AddTopicPanel panel = new AddTopicPanel(catid, parent,
+							getThis());
+
+					hide();
+
+				}
+			}
+		});
+		addChild(addThreadButton);
+
+		getTopics();
+	}
+
+	private Category getThis() {
+		return this;
+	}
+
+	private void getTopics() {
+		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("detta sög ju");
+
+			}
+
+			@Override
+			public void onSuccess(TopicData[] result) {
+				for (int i = 0; i < result.length; i++) {
+
+					if (!topics.contains(result[i].getId())) {
+						addThread(new ForumThread(result[i].getId(), result[i]
+								.getCategoryID(), result[i].getAuthorID(),
+								result[i].getName(), result[i].getDate(),
+								parent));
+						topics.add(result[i].getId());
+					}
+				}
+
+			}
+		};
+		forumSvc.getThreads(catid, callback);
 	}
 
 	private void killThread() {
@@ -80,17 +114,17 @@ public class Category extends Canvas {
 		currentThread = null;
 	}
 
-	public void addThread(final ForumThread thread) {
+	public void addThread(final ForumThread topic) {
 		final Label label = new Label("<div class='category'>"
-				+ thread.getName() + "</div>");
+				+ topic.getName() + "</div>");
 		label.addClickHandler(new ClickHandler() {
 			// fixa lite här
 			@Override
 			public void onClick(ClickEvent event) {
-				if (currentThread != thread) {
-					thread.draw();
+				if (currentThread != topic) {
+					topic.draw();
 					hide();
-					currentThread = thread;
+					currentThread = topic;
 				}
 			}
 		});
@@ -118,7 +152,9 @@ public class Category extends Canvas {
 	}
 
 	public void unhide() {
+	
 		animateRect(500, 0, 600, getHeight(), null, 1000);
+		getTopics();
 		for (Label l : labels)
 			l.setWidth(600);
 		setVisible(true);

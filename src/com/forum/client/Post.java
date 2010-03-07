@@ -1,16 +1,21 @@
 package com.forum.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import java.io.Serializable;
+
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.HStack;
 
-public class Post extends Canvas {
+public class Post extends Canvas implements Serializable{
 	
 	//id som retuneras
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4293489942482413197L;
 	private HStack layout = new HStack();
 	private String text;
 	private String topicName = "henkes penis";
@@ -20,6 +25,10 @@ public class Post extends Canvas {
 	private int threadID;
 	private int authorID;
 	private String date;
+	
+	public Post(){
+		
+	}
 	
 	public Post(String topicName, String text) {
 		super();
@@ -64,19 +73,9 @@ public class Post extends Canvas {
 		layout.addMember(avatar);
 		addChild(layout);
 		//html part
-		//textDisplay.setContents("<h2> Re:" + topicName + "</h2> <p>" + text +" </p>");
-		//layout.addMember(textDisplay);
+		textDisplay.setContents("<h2> Re:" + topicName + "</h2> <p>" + text +" </p>");
+		layout.addMember(textDisplay);
 	}
 
-	class UserAvatar extends Label {
-		public UserAvatar() {
-			setHeight(150);
-			setWidth(100);
-			setPadding(10);
-			setShowEdges(true);
-			
-		}
-
-	}
 
 }

@@ -1,7 +1,11 @@
 package com.forum.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.forum.client.data.PostData;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
@@ -11,8 +15,10 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.VStack;
 
-public class ForumThread {
+public class ForumThread implements Serializable {
 
+	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private Canvas parent;
 	private Canvas head, tail;
@@ -26,8 +32,10 @@ public class ForumThread {
 	private int categoryID;
 	private int authorID;
 	private String date;
+	private ArrayList<Long> postID = new ArrayList<Long>();
 
-	public ForumThread(int id, int catID, int auID, String name, String date, Canvas parent) {
+	public ForumThread(int id, int catID, int auID, String name, String date,
+			Canvas parent) {
 		this.id = id;
 		this.categoryID = catID;
 		this.authorID = auID;
@@ -92,7 +100,33 @@ public class ForumThread {
 		tailLayout.addMember(submitButton);
 		tail.addChild(tailLayout);
 		// bodysection
-		addPost(new Post(name, "jag gillar henkesex best!"));
+		getPost();
+	}
+
+	private void getPost() {
+		AsyncCallback<PostData[]> callback = new AsyncCallback<PostData[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+
+			}
+
+			@Override
+			public void onSuccess(PostData[] result) {
+
+				for (int i = 0; i < result.length; i++) {
+					System.out.println(result[i].getText());
+					if (!postID.contains(result[i].getId())) {
+						addPost(new Post(result[i].getId(), result[i]
+								.getTopicID(), result[i].getAuthorID(),
+								result[i].getDate(), result[i].getText()));
+						postID.add(result[i].getId());
+					}
+				}
+
+			}
+		};
+		forumSvc.getPosts(id, callback);
 	}
 
 	private void addPost(Post post) {
