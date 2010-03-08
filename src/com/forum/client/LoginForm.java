@@ -2,6 +2,7 @@ package com.forum.client;
 
 import com.forum.client.admin.AdminPanel;
 import com.forum.client.admin.AdminServiceAsync;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -17,7 +18,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 public class LoginForm extends DynamicForm {
 
 	private AdminServiceAsync adminSvc;
-	private AsyncCallback<Boolean> callbackLogin;
+	private AsyncCallback<String> callbackLogin;
 	private AdminPanel adminPanel;
 
 	private TextItem usernameItem = new TextItem();
@@ -71,15 +72,16 @@ public class LoginForm extends DynamicForm {
 		});
 
 		setFields(header, usernameItem, passwordItem, loginItem);
+		focusInItem(usernameItem);
 	}
 
 	private void createCallbacks() {
-		callbackLogin = new AsyncCallback<Boolean>() {
+		callbackLogin = new AsyncCallback<String>() {
 
 			@Override
-			public void onSuccess(Boolean result) {
-				if (result) {
-					adminPanel.reload();
+			public void onSuccess(String result) {
+				if (result != null) {
+					adminPanel.reload(result);
 				} else {
 					SC.say("Mismatching cresidentials",
 							"Username and password do not match.");
@@ -102,8 +104,9 @@ public class LoginForm extends DynamicForm {
 	}
 
 	public void submit() {
+		String sid = Cookies.getCookie("sid");
 		adminSvc.logIn(usernameItem.getDisplayValue(), passwordItem
-				.getDisplayValue(), callbackLogin);
+				.getDisplayValue(), sid, callbackLogin);
 	}
 
 }
