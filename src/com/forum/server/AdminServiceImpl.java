@@ -242,4 +242,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements
 		return false;
 	}
 
+	@Override
+	public User getUser(String sid) {
+		return LoginHandler.getUser(sid);
+	}
+
 }

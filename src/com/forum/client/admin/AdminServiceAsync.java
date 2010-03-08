@@ -18,6 +18,8 @@ public interface AdminServiceAsync {
 
 	void getUsers(String sid, AsyncCallback<User[]> users);
 
+	void getUser(String sid, AsyncCallback<User> user);
+
 	void hasPrivileges(Privileges privilegeLevel, String sid,
 			AsyncCallback<Integer> callback);
 

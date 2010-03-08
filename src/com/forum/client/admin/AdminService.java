@@ -28,6 +28,8 @@ public interface AdminService extends RemoteService {
 
 	User[] getUsers(String sid);
 
+	User getUser(String sid);
+
 	int hasPrivileges(Privileges privilegeLevel, String sid);
 
 	String logIn(String username, String password, String sid);
