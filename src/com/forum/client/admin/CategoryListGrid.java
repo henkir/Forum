@@ -30,6 +30,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Callback for setting position of a category.
 	 */
 	private AsyncCallback<Boolean> callbackSetCategories;
+	private String sid;
 
 	/**
 	 * Creates a new CategoryListGrid that uses the given service to communicate
@@ -38,9 +39,10 @@ public class CategoryListGrid extends ListGrid {
 	 * @param adminService
 	 *            the service to use
 	 */
-	public CategoryListGrid(AdminServiceAsync adminService) {
+	public CategoryListGrid(AdminServiceAsync adminService, String sid) {
 		super();
 		this.adminSvc = adminService;
+		this.sid = sid;
 
 		createCallbacks();
 		init();
@@ -91,8 +93,11 @@ public class CategoryListGrid extends ListGrid {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					adminSvc.getCategories(callbackGetCategories);
+					adminSvc.getCategories(sid, callbackGetCategories);
 					SC.say("Update failure", "Failed to update categories.");
+				} else {
+					SC.say("Update successful",
+							"Successfully updated categories.");
 				}
 			}
 		};
@@ -102,7 +107,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Get all categories.
 	 */
 	public void getCategories() {
-		adminSvc.getCategories(callbackGetCategories);
+		adminSvc.getCategories(sid, callbackGetCategories);
 	}
 
 	/**
@@ -153,7 +158,7 @@ public class CategoryListGrid extends ListGrid {
 			description = records[i].getAttribute("categoryDescription");
 			cats[i] = new AdminCategory(id, name, description);
 		}
-		adminSvc.setCategories(cats, callbackSetCategories);
+		adminSvc.setCategories(cats, sid, callbackSetCategories);
 	}
 
 }

@@ -4,7 +4,6 @@ import com.forum.client.Privileges;
 import com.forum.client.User;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
-import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
@@ -31,10 +30,6 @@ public class UserListGrid extends ListGrid {
 	 */
 	private AsyncCallback<Privileges> callbackInit;
 	/**
-	 * Callback for deleting a user.
-	 */
-	private AsyncCallback<Boolean> callbackDeleteUser;
-	/**
 	 * Callback for getting an array of all users.
 	 */
 	private AsyncCallback<User[]> callbackGetUsers;
@@ -42,6 +37,7 @@ public class UserListGrid extends ListGrid {
 	 * Callback for setting users.
 	 */
 	private AsyncCallback<Boolean> callbackSetUsers;
+	private String sid;
 
 	/**
 	 * Creates a new UserListGrid that uses the given service to communicate
@@ -50,14 +46,15 @@ public class UserListGrid extends ListGrid {
 	 * @param adminService
 	 *            the service to use
 	 */
-	public UserListGrid(AdminServiceAsync adminService) {
+	public UserListGrid(AdminServiceAsync adminService, String sid) {
 		super();
 		this.adminSvc = adminService;
+		this.sid = sid;
 
 		init();
 
 		createCallbacks();
-		adminSvc.getPrivileges(callbackInit);
+		adminSvc.getPrivileges(sid, callbackInit);
 	}
 
 	/**
@@ -118,8 +115,10 @@ public class UserListGrid extends ListGrid {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					adminSvc.getUsers(callbackGetUsers);
+					adminSvc.getUsers(null, callbackGetUsers);
 					SC.say("Update failure", "Failed to update users.");
+				} else {
+					SC.say("Update successful", "Successfully updated users.");
 				}
 			}
 		};
@@ -127,37 +126,10 @@ public class UserListGrid extends ListGrid {
 	}
 
 	/**
-	 * Deletes the selected user. It first displays a confirmation window, then
-	 * contacts the server to delete the user. If it was successful, the users
-	 * are re-read from the server. If it failed, a notification will be
-	 * displayed.
-	 */
-	public void deleteSelectedUser() {
-		ListGridRecord record = getSelectedRecord();
-
-		String username = record.getAttribute("Username");
-		Privileges privileges = Privileges.valueOf(record.getAttribute(
-				"Privileges").toUpperCase());
-
-		final User user = new User(username, privileges);
-
-		SC.confirm("Delete user", "Do you really want to delete '" + username
-				+ "'?", new BooleanCallback() {
-
-			@Override
-			public void execute(Boolean value) {
-				if (value) {
-					adminSvc.deleteUser(user, callbackDeleteUser);
-				}
-			}
-		});
-	}
-
-	/**
 	 * Gets all users with the same privileges or less from the server.
 	 */
 	public void getUsers() {
-		adminSvc.getUsers(callbackGetUsers);
+		adminSvc.getUsers(sid, callbackGetUsers);
 	}
 
 	/**
@@ -229,7 +201,7 @@ public class UserListGrid extends ListGrid {
 			users[i] = user;
 		}
 
-		adminSvc.setUsers(users, callbackSetUsers);
+		adminSvc.setUsers(users, sid, callbackSetUsers);
 	}
 
 }

@@ -1,8 +1,10 @@
 package com.forum.client.admin;
 
+import java.util.Date;
+
 import com.forum.client.LoginForm;
 import com.forum.client.Privileges;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
@@ -30,7 +32,7 @@ public class AdminPanel extends Canvas {
 	/**
 	 * Admin service connection.
 	 */
-	private AdminServiceAsync adminSvc = GWT.create(AdminService.class);
+	private AdminServiceAsync adminSvc = AdminService.Util.getInstance();
 
 	/**
 	 * Callback for authorizing the user.
@@ -95,17 +97,20 @@ public class AdminPanel extends Canvas {
 	 */
 	private Window window;
 
+	private String sid;
+
 	/**
 	 * Checks if a user is logged in and if he has privileges to access the
 	 * admin panel. If so, then show it. Otherwise, display a message.
 	 */
 	public AdminPanel() {
+		sid = Cookies.getCookie("sid");
 		addChild(authorizing);
 		setHeight(400);
 		setWidth100();
 		createCallbacks();
 
-		adminSvc.hasPrivileges(Privileges.MODERATOR, callbackAuthorize);
+		adminSvc.hasPrivileges(Privileges.MODERATOR, sid, callbackAuthorize);
 	}
 
 	/**
@@ -209,8 +214,8 @@ public class AdminPanel extends Canvas {
 	 * Initializes all the components.
 	 */
 	private void init() {
-		users = new UserListGrid(adminSvc);
-		categories = new CategoryListGrid(adminSvc);
+		users = new UserListGrid(adminSvc, sid);
+		categories = new CategoryListGrid(adminSvc, sid);
 		// Edit users
 
 		// Label
@@ -306,6 +311,17 @@ public class AdminPanel extends Canvas {
 		addChild(createLayout());
 	}
 
+	public void reload(String sid) {
+		this.sid = sid;
+		final long DURATION = 1000 * 60 * 30; // 30 minutes
+		Date expires = new Date(System.currentTimeMillis() + DURATION);
+		Cookies.setCookie("sid", sid, expires, null, "/", false);
+		adminSvc.hasPrivileges(Privileges.MODERATOR, sid, callbackAuthorize);
+		if (window != null) {
+			window.hide();
+		}
+	}
+
 	/**
 	 * Shows a login window with textboxes for username and password.
 	 */
@@ -320,13 +336,7 @@ public class AdminPanel extends Canvas {
 		window.addItem(layout);
 		window.draw();
 		window.animateResize(300, 200);
-	}
-
-	public void reload() {
-		adminSvc.hasPrivileges(Privileges.MODERATOR, callbackAuthorize);
-		if (window != null) {
-			window.hide();
-		}
+		window.focus();
 	}
 
 	/**

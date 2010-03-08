@@ -3,49 +3,135 @@ package com.forum.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import com.forum.client.Privileges;
 import com.forum.client.User;
 
+/**
+ * A static class that keeps track of logged in users and provides methods for
+ * logging in/out user and checking if a user is logged in or not.
+ * 
+ * @author henrik
+ * 
+ */
 public class LoginHandler {
 
+	/**
+	 * Connection to the database.
+	 */
 	private static DatabaseConnection connection = new DatabaseConnection(true);
-	private static LoginHandler loginHandler = new LoginHandler();
+	/**
+	 * Contains mapping from session id to logged in users.
+	 */
 	private static HashMap<String, User> loggedInUsers = new HashMap<String, User>();
-	private static User loggedInUser = new User(1, "te", Privileges.MODERATOR);
+	/**
+	 * Contains mapping from session id to last activity.
+	 */
+	private static HashMap<String, Date> lastActivity = new HashMap<String, Date>();
+	/**
+	 * Random generator for generating a random session id.
+	 */
 	private static Random random = new Random();
+	/**
+	 * The maximum duration of the session. 30 minutes.
+	 */
+	private static final int duration = 1000 * 60 * 30;
+	/**
+	 * Characters that can be used in the session id.
+	 */
+	private static final char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+			'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+			'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6',
+			'7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+			'K', 'L', 'M', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y',
+			'Z' };
 
-	public static LoginHandler getInstance() {
-		return loginHandler;
+	/**
+	 * Removes old logins from the HashMaps.
+	 */
+	private static void cleanUp() {
+		String sid;
+		for (Entry<String, Date> entry : lastActivity.entrySet()) {
+			if (entry.getValue().before(
+					new Date(System.currentTimeMillis() - duration))) {
+				sid = entry.getKey();
+				loggedInUsers.remove(sid);
+				lastActivity.remove(sid);
+			}
+		}
 	}
 
-	public boolean isLoggedIn() {
-		String sessionId = "";
-		if (sessionId != null && loggedInUsers.containsKey(sessionId)) {
+	/**
+	 * Generates a random session id.
+	 * 
+	 * @return the generated session id
+	 */
+	private static String generateSid() {
+		if (random.nextInt(20) == 0) {
+			random = new Random();
+		}
+
+		StringBuilder sid = new StringBuilder();
+
+		for (int i = 0; i < 40; i++) {
+			sid.append(chars[random.nextInt(chars.length)]);
+		}
+		return sid.toString();
+	}
+
+	/**
+	 * Gets the user associated with the session id.
+	 * 
+	 * @param sid
+	 *            the session id
+	 * @return the user with the session id, or null
+	 */
+	public static User getUser(String sid) {
+
+		return loggedInUsers.get(sid);
+	}
+
+	/**
+	 * Checks if a user is logged in. Also updates last activity so the users
+	 * session won't expire.
+	 * 
+	 * @param sid
+	 *            the session id
+	 * @return true if user is logged in, or false
+	 */
+	public static boolean isLoggedIn(String sid) {
+		if (sid != null && loggedInUsers.containsKey(sid)) {
+			lastActivity.put(sid, new Date(System.currentTimeMillis()));
+			if (random.nextInt(20) == 0) {
+				cleanUp();
+			}
 			return true;
 		}
-		return true;
+		return false;
 	}
 
-	public User getLoggedInUser() {
-		String sessionId = "";
-		if (sessionId != null && loggedInUsers.containsKey(sessionId)) {
-			return loggedInUsers.get(sessionId);
-		}
-		return loggedInUser;
-	}
-
-	public boolean logIn(String username, String password) {
-		String sessionId = null;
-		// User already logged in?
-		if (sessionId != null || loggedInUsers.containsKey(sessionId)) {
-			return false;
-		}
-
+	/**
+	 * Logs in a user if the username and password match.
+	 * 
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @param sid
+	 *            the current session id
+	 * @return the new session id
+	 */
+	public static String logIn(String username, String password, String sid) {
 		Statement statement = connection.getStatement();
 		String query;
+
+		if (sid != null && loggedInUsers.containsKey(sid)) {
+			return sid;
+		}
 
 		ResultSet rs;
 		query = "SELECT id, username, priv_level FROM users WHERE username = '"
@@ -57,18 +143,31 @@ public class LoginHandler {
 				String name = rs.getString("username");
 				Privileges privileges = Privileges.getPrivilege(rs
 						.getInt("priv_level"));
-				String genSessionId = null;
-				loggedInUsers.put(genSessionId, new User(id, name, privileges));
-				return true;
+				User user = new User(id, name, privileges);
+				sid = generateSid();
+				loggedInUsers.put(sid, user);
+				lastActivity.put(sid, new Date(System.currentTimeMillis()));
+				return sid;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 
-	public void logOut() {
-		loggedInUser = null;
+	/**
+	 * Logs out the user with the associated session id.
+	 * 
+	 * @param sid
+	 *            the session id
+	 */
+	public static void logOut(String sid) {
+		loggedInUsers.remove(sid);
+		lastActivity.remove(sid);
+	}
+
+	private LoginHandler() {
+
 	}
 
 	@Override

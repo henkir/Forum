@@ -2,39 +2,39 @@ package com.forum.client.admin;
 
 import com.forum.client.Privileges;
 import com.forum.client.User;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 @RemoteServiceRelativePath("adminTasks")
 public interface AdminService extends RemoteService {
 
-	boolean addCategory(AdminCategory category);
+	public static class Util {
+		public static final String SERVICE_URI = "adminTasks";
 
-	boolean deleteUser(User user);
+		public static AdminServiceAsync getInstance() {
+			AdminServiceAsync instance = (AdminServiceAsync) GWT
+					.create(AdminService.class);
+			ServiceDefTarget target = (ServiceDefTarget) instance;
+			target.setServiceEntryPoint(GWT.getModuleBaseURL() + SERVICE_URI);
+			return instance;
+		}
+	}
 
-	boolean editCategory(AdminCategory oldCategory, AdminCategory newCategory);
+	AdminCategory[] getCategories(String sid);
 
-	AdminCategory[] getCategories();
+	Privileges getPrivileges(String sid);
 
-	AdminCategory[] getCategories(String filter);
+	User[] getUsers(String sid);
 
-	Privileges getPrivileges();
+	int hasPrivileges(Privileges privilegeLevel, String sid);
 
-	User[] getUsers();
+	String logIn(String username, String password, String sid);
 
-	User[] getUsers(String filter);
+	void logOut(String sid);
 
-	int hasPrivileges(Privileges privilegeLevel);
+	boolean setCategories(AdminCategory[] categories, String sid);
 
-	boolean removeCategory(AdminCategory category);
-
-	boolean setCategories(AdminCategory[] categories);
-
-	boolean setUsers(User[] users);
-
-	boolean updateUser(User user);
-
-	boolean logIn(String username, String password);
-
-	void logOut();
+	boolean setUsers(User[] users, String sid);
 }
