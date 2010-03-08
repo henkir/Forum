@@ -2,8 +2,11 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
+import com.forum.client.admin.AdminService;
+import com.forum.client.admin.AdminServiceAsync;
 import com.forum.client.data.TopicData;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -25,9 +28,14 @@ public class Category extends Canvas {
 	private int currentHeight = 0;
 	private ForumThread currentThread = null;
 
+
 	public Category(String name, int id, final Canvas parent) {
 		super();
 
+		
+		
+		
+		
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setWidth(600);
@@ -82,6 +90,11 @@ public class Category extends Canvas {
 		return this;
 	}
 
+	public void setTopic(ForumThread topic) {
+		topic.draw();
+		currentThread = topic;
+	}
+	
 	private void getTopics() {
 		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
 

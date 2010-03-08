@@ -35,6 +35,18 @@ public class ForumThread implements Serializable {
 	private ArrayList<Long> postID = new ArrayList<Long>();
 
 	public ForumThread(int id, int catID, int auID, String name, String date,
+			Canvas parent, String initPost) {
+		this.id = id;
+		this.categoryID = catID;
+		this.authorID = auID;
+		this.name = name;
+		this.date = date;
+		this.parent = parent;
+		addPost(initPost);
+		initThread();
+	}
+
+	public ForumThread(int id, int catID, int auID, String name, String date,
 			Canvas parent) {
 		this.id = id;
 		this.categoryID = catID;
@@ -74,8 +86,10 @@ public class ForumThread implements Serializable {
 		tailLayout = new VStack();
 		tailLayout.setMembersMargin(5);
 		tailLayout.setLayoutMargin(10);
-
-		tailLayout.addMember(new Label("<h3>Posta en post kanske?</h3>"));
+		final Label postLabel = new Label("<h3>Post a post here</h3>");
+		postLabel.setWidth(200);
+		postLabel.setHeight(30);
+		tailLayout.addMember(postLabel);
 
 		rtEditor = new RichTextEditor();
 		rtEditor.setHeight(150);
@@ -90,10 +104,7 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				addPost(new Post(name, rtEditor.getValue()));
-				kill();
-				currentHeight = 0;
-				draw();
+				addPost(rtEditor.getValue());
 				rtEditor.setValue("");
 			}
 		});
@@ -101,6 +112,7 @@ public class ForumThread implements Serializable {
 		tail.addChild(tailLayout);
 		// bodysection
 		getPost();
+
 	}
 
 	private void getPost() {
@@ -115,9 +127,9 @@ public class ForumThread implements Serializable {
 			public void onSuccess(PostData[] result) {
 
 				for (int i = 0; i < result.length; i++) {
-					System.out.println(result[i].getText());
+
 					if (!postID.contains(result[i].getId())) {
-						addPost(new Post(result[i].getId(), result[i]
+						posts.add(new Post(result[i].getId(), result[i]
 								.getTopicID(), result[i].getAuthorID(),
 								result[i].getDate(), result[i].getText()));
 						postID.add(result[i].getId());
@@ -129,8 +141,25 @@ public class ForumThread implements Serializable {
 		forumSvc.getPosts(id, callback);
 	}
 
-	private void addPost(Post post) {
-		posts.add(post);
+	private void addPost(String post) {
+		AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess(Integer result) {
+				getPost();
+				currentHeight = 0;
+				draw();
+				rtEditor.setValue("");
+			}
+		};
+		forumSvc.addPost(post, id, authorID, callback);
+
 	}
 
 	public String getName() {
@@ -138,6 +167,7 @@ public class ForumThread implements Serializable {
 	}
 
 	public void draw() {
+
 		head.setLeft(500);
 		currentHeight += head.getHeight() + 10;
 		parent.addChild(head);
@@ -157,6 +187,7 @@ public class ForumThread implements Serializable {
 	}
 
 	public void kill() {
+		currentHeight = 0;
 		parent.removeChild(head);
 		head.setVisible(false);
 		for (Post p : posts) {
