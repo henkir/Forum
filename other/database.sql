@@ -15,7 +15,8 @@ CREATE TABLE users (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 -- Create the table for all categories.
 CREATE TABLE categories (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                          name VARCHAR(20) NOT NULL UNIQUE,
-                         description VARCHAR(100) NOT NULL
+                         description VARCHAR(100) NOT NULL,
+                         position INT DEFAULT 0
                          ) ENGINE=MyISAM;
 -- Create the table for topics, they will reference to a category that they belong to.
 -- Could add additional information.
@@ -34,9 +35,16 @@ CREATE TABLE posts (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     time_posted DATETIME NOT NULL,
                     post TEXT NOT NULL
                     ) ENGINE=MyISAM;
+
+
+
 -- Create a new user for the forum. Comment out the next two lines if the user is already created.
--- CREATE USER 'forum_user' IDENTIFIED BY 'forum_pass135';
+-- CREATE USER 'forum_user';
+-- SET PASSWORD FOR 'forum_user' = PASSWORD('forum_pass');
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON forum.* TO 'forum_user';
+
+
+
 -- Create test data.
 -- Create a normal user with test:test.
 INSERT INTO users(username, password) VALUES ('test', 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3');
