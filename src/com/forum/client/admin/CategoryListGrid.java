@@ -1,6 +1,7 @@
 package com.forum.client.admin;
 
 import com.forum.client.ForumServiceAsync;
+import com.forum.client.SessionHandler;
 import com.forum.client.data.CategoryData;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
@@ -32,7 +33,6 @@ public class CategoryListGrid extends ListGrid {
 	 * Callback for setting position of a category.
 	 */
 	private AsyncCallback<Boolean> callbackSetCategories;
-	private String sid;
 
 	/**
 	 * Creates a new CategoryListGrid that uses the given service to communicate
@@ -41,10 +41,9 @@ public class CategoryListGrid extends ListGrid {
 	 * @param forumService
 	 *            the service to use
 	 */
-	public CategoryListGrid(ForumServiceAsync forumService, String sid) {
+	public CategoryListGrid(ForumServiceAsync forumService) {
 		super();
 		this.forumSvc = forumService;
-		this.sid = sid;
 
 		createCallbacks();
 		init();
@@ -95,7 +94,7 @@ public class CategoryListGrid extends ListGrid {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					forumSvc.getCategories(sid, callbackGetCategories);
+					forumSvc.getCategories(callbackGetCategories);
 					SC.say("Update failure", "Failed to update categories.");
 				} else {
 					SC.say("Update successful",
@@ -109,7 +108,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Get all categories.
 	 */
 	public void getCategories() {
-		forumSvc.getCategories(sid, callbackGetCategories);
+		forumSvc.getCategories(callbackGetCategories);
 	}
 
 	/**
@@ -160,7 +159,8 @@ public class CategoryListGrid extends ListGrid {
 			description = records[i].getAttribute("categoryDescription");
 			cats[i] = new CategoryData(id, name, description);
 		}
-		forumSvc.setCategories(cats, sid, callbackSetCategories);
+		forumSvc.setCategories(cats, SessionHandler.getSessionId(),
+				callbackSetCategories);
 	}
 
 }

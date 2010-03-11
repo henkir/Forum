@@ -52,7 +52,6 @@ public class Post extends Canvas implements Serializable {
 			@Override
 			public void onSuccess(User result) {
 				// TODO Auto-generated method stub
-				System.out.println("hellu");
 				if (result != null)
 					userName = result.getName();
 				else

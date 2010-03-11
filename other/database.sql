@@ -49,9 +49,9 @@ CREATE TABLE posts (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 -- Create a normal user with test:test.
 INSERT INTO users(username, password) VALUES ('test', 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3');
 -- Create a super admin with highest privileges, admin:admin.
-INSERT INTO users(username, password, priv_level) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 9);
+INSERT INTO users(username, password, priv_level) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 2);
 -- Create a moderator with medium privileges, moder:moder.
-INSERT INTO users(username, password, priv_level) VALUES ('moder', 'b36c04f4f2496b9525646ec01ff51e2007e79a2c', 4);
+INSERT INTO users(username, password, priv_level) VALUES ('moder', 'b36c04f4f2496b9525646ec01ff51e2007e79a2c', 1);
 -- Create some categories.
 INSERT INTO categories(name, description) VALUES ('Music', 'Discussions about music go here.');
 INSERT INTO categories(name, description) VALUES ('Politics', 'Discussions about politics go here.');

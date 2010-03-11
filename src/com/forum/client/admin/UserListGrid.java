@@ -2,6 +2,7 @@ package com.forum.client.admin;
 
 import com.forum.client.ForumServiceAsync;
 import com.forum.client.Privileges;
+import com.forum.client.SessionHandler;
 import com.forum.client.User;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
@@ -38,7 +39,6 @@ public class UserListGrid extends ListGrid {
 	 * Callback for setting users.
 	 */
 	private AsyncCallback<Boolean> callbackSetUsers;
-	private String sid;
 
 	/**
 	 * Creates a new UserListGrid that uses the given service to communicate
@@ -47,15 +47,14 @@ public class UserListGrid extends ListGrid {
 	 * @param forumService
 	 *            the service to use
 	 */
-	public UserListGrid(ForumServiceAsync forumService, String sid) {
+	public UserListGrid(ForumServiceAsync forumService) {
 		super();
 		this.forumSvc = forumService;
-		this.sid = sid;
 
 		init();
 
 		createCallbacks();
-		forumSvc.getPrivileges(sid, callbackInit);
+		forumSvc.getPrivileges(SessionHandler.getSessionId(), callbackInit);
 	}
 
 	/**
@@ -130,7 +129,7 @@ public class UserListGrid extends ListGrid {
 	 * Gets all users with the same privileges or less from the server.
 	 */
 	public void getUsers() {
-		forumSvc.getUsers(sid, callbackGetUsers);
+		forumSvc.getUsers(SessionHandler.getSessionId(), callbackGetUsers);
 	}
 
 	/**
@@ -202,7 +201,8 @@ public class UserListGrid extends ListGrid {
 			users[i] = user;
 		}
 
-		forumSvc.setUsers(users, sid, callbackSetUsers);
+		forumSvc.setUsers(users, SessionHandler.getSessionId(),
+				callbackSetUsers);
 	}
 
 }

@@ -66,7 +66,7 @@ public class LoginHandler {
 	}
 
 	/**
-	 * Generates a random session id.
+	 * Generates a random session id that is not currently in use.
 	 * 
 	 * @return the generated session id
 	 */
@@ -76,9 +76,12 @@ public class LoginHandler {
 		}
 
 		StringBuilder sid = new StringBuilder();
+		while (sid.length() == 0 || lastActivity.containsKey(sid.toString())) {
+			sid.delete(0, sid.length());
 
-		for (int i = 0; i < 40; i++) {
-			sid.append(chars[random.nextInt(chars.length)]);
+			for (int i = 0; i < 40; i++) {
+				sid.append(chars[random.nextInt(chars.length)]);
+			}
 		}
 		return sid.toString();
 	}
@@ -161,9 +164,10 @@ public class LoginHandler {
 	 * @param sid
 	 *            the session id
 	 */
-	public static void logOut(String sid) {
+	public static String logOut(String sid) {
 		loggedInUsers.remove(sid);
 		lastActivity.remove(sid);
+		return generateSid();
 	}
 
 	private LoginHandler() {

@@ -75,37 +75,6 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public CategoryData[] getCategories(String sid) {
-		if (hasPrivileges(Privileges.MODERATOR, sid) == 2) {
-			if (connection == null) {
-				return null;
-			}
-
-			String query = "SELECT id, name, description, position FROM categories ORDER BY position;";
-			Statement statement = connection.getStatement();
-			try {
-				ResultSet rs = statement.executeQuery(query);
-				ArrayList<CategoryData> categories = new ArrayList<CategoryData>();
-				String tempDescription;
-				String tempName;
-				int tempId;
-				while (rs.next()) {
-					tempId = rs.getInt("id");
-					tempDescription = rs.getString("description");
-					tempName = rs.getString("name");
-					categories.add(new CategoryData(tempId, tempName,
-							tempDescription));
-				}
-				return categories.toArray(new CategoryData[0]);
-			} catch (SQLException e) {
-				e.printStackTrace();
-
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public PostData[] getPosts(int threadID) {
 
 		ArrayList<PostData> result = new ArrayList<PostData>();
@@ -132,7 +101,12 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Privileges getPrivileges(String sid) {
-		return LoginHandler.getUser(sid).getPrivileges();
+		User user = LoginHandler.getUser(sid);
+		if (user != null) {
+			return user.getPrivileges();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -217,8 +191,8 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void logOut(String sid) {
-		LoginHandler.logOut(sid);
+	public String logOut(String sid) {
+		return LoginHandler.logOut(sid);
 	}
 
 	@Override
