@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import com.forum.client.data.CategoryData;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
@@ -58,28 +56,6 @@ public class CategoryList extends Canvas {
 
 	}
 
-	private void getCategories() {
-		AsyncCallback<CategoryData[]> callback = new AsyncCallback<CategoryData[]>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				System.err.println("dark_doom");
-
-			}
-
-			@Override
-			public void onSuccess(CategoryData[] result) {
-				for (int i = 0; i < result.length; i++) {
-					addCategory(new Category(result[i].getName(), result[i].getId(), parent));
-				}
-				
-
-			}
-
-		};
-		forumSvc.getCategories(callback);
-	}
-
 	public void addCategory(final Category category) {
 		final Label label = new Label("<div class='category'>"
 				+ category.getName() + "</div>");
@@ -107,10 +83,26 @@ public class CategoryList extends Canvas {
 		addChild(label);
 	}
 
-	public void killCategory() {
-		currentCategory.hide();
-		parent.removeChild(currentCategory);
-		currentCategory = null;
+	private void getCategories() {
+		AsyncCallback<CategoryData[]> callback = new AsyncCallback<CategoryData[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("dark_doom");
+
+			}
+
+			@Override
+			public void onSuccess(CategoryData[] result) {
+				for (int i = 0; i < result.length; i++) {
+					addCategory(new Category(result[i].getName(), result[i]
+							.getId(), parent));
+				}
+
+			}
+
+		};
+		forumSvc.getCategories(callback);
 	}
 
 	public void hide() {
@@ -119,6 +111,12 @@ public class CategoryList extends Canvas {
 		for (Label l : labels)
 			l.setWidth(200);
 		hidden = true;
+	}
+
+	public void killCategory() {
+		currentCategory.hide();
+		parent.removeChild(currentCategory);
+		currentCategory = null;
 	}
 
 	public void unhide() {

@@ -1,5 +1,7 @@
 package com.forum.client.admin;
 
+import com.forum.client.ForumServiceAsync;
+import com.forum.client.data.CategoryData;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.util.SC;
@@ -20,12 +22,12 @@ public class CategoryListGrid extends ListGrid {
 	/**
 	 * Admin service connection.
 	 */
-	private AdminServiceAsync adminSvc;
+	private ForumServiceAsync forumSvc;
 
 	/**
 	 * Callback for getting all categories.
 	 */
-	private AsyncCallback<AdminCategory[]> callbackGetCategories;
+	private AsyncCallback<CategoryData[]> callbackGetCategories;
 	/**
 	 * Callback for setting position of a category.
 	 */
@@ -36,12 +38,12 @@ public class CategoryListGrid extends ListGrid {
 	 * Creates a new CategoryListGrid that uses the given service to communicate
 	 * with the server.
 	 * 
-	 * @param adminService
+	 * @param forumService
 	 *            the service to use
 	 */
-	public CategoryListGrid(AdminServiceAsync adminService, String sid) {
+	public CategoryListGrid(ForumServiceAsync forumService, String sid) {
 		super();
-		this.adminSvc = adminService;
+		this.forumSvc = forumService;
 		this.sid = sid;
 
 		createCallbacks();
@@ -53,7 +55,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Create the callbacks used.
 	 */
 	private void createCallbacks() {
-		callbackGetCategories = new AsyncCallback<AdminCategory[]>() {
+		callbackGetCategories = new AsyncCallback<CategoryData[]>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -62,13 +64,13 @@ public class CategoryListGrid extends ListGrid {
 			}
 
 			@Override
-			public void onSuccess(AdminCategory[] result) {
+			public void onSuccess(CategoryData[] result) {
 				if (result != null) {
 					setEmptyMessage("No categories");
 					selectAllRecords();
 					removeSelectedData();
 					ListGridRecord record;
-					for (AdminCategory category : result) {
+					for (CategoryData category : result) {
 						record = new ListGridRecord();
 						record.setAttribute("categoryId", category.getId());
 						record.setAttribute("categoryName", category.getName());
@@ -93,7 +95,7 @@ public class CategoryListGrid extends ListGrid {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					adminSvc.getCategories(sid, callbackGetCategories);
+					forumSvc.getCategories(sid, callbackGetCategories);
 					SC.say("Update failure", "Failed to update categories.");
 				} else {
 					SC.say("Update successful",
@@ -107,7 +109,7 @@ public class CategoryListGrid extends ListGrid {
 	 * Get all categories.
 	 */
 	public void getCategories() {
-		adminSvc.getCategories(sid, callbackGetCategories);
+		forumSvc.getCategories(sid, callbackGetCategories);
 	}
 
 	/**
@@ -148,7 +150,7 @@ public class CategoryListGrid extends ListGrid {
 	 */
 	public void saveCategories() {
 		ListGridRecord[] records = getRecords();
-		AdminCategory[] cats = new AdminCategory[records.length];
+		CategoryData[] cats = new CategoryData[records.length];
 		String name;
 		String description;
 		int id;
@@ -156,9 +158,9 @@ public class CategoryListGrid extends ListGrid {
 			id = records[i].getAttributeAsInt("categoryId");
 			name = records[i].getAttribute("categoryName");
 			description = records[i].getAttribute("categoryDescription");
-			cats[i] = new AdminCategory(id, name, description);
+			cats[i] = new CategoryData(id, name, description);
 		}
-		adminSvc.setCategories(cats, sid, callbackSetCategories);
+		forumSvc.setCategories(cats, sid, callbackSetCategories);
 	}
 
 }

@@ -17,6 +17,11 @@ public enum Privileges {
 		}
 	}
 
+	public static Privileges[] getOrderedArray() {
+		Privileges[] privs = { MEMBER, MODERATOR, ADMINISTRATOR };
+		return privs;
+	}
+
 	public static Privileges getPrivilege(int privilege) {
 		switch (privilege) {
 		case 0:
@@ -28,11 +33,6 @@ public enum Privileges {
 		default:
 			return Privileges.MEMBER;
 		}
-	}
-
-	public static Privileges[] getOrderedArray() {
-		Privileges[] privs = { MEMBER, MODERATOR, ADMINISTRATOR };
-		return privs;
 	}
 
 	public String toString() {

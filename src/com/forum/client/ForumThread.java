@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.forum.client.data.PostData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RichTextArea;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
@@ -35,6 +34,17 @@ public class ForumThread implements Serializable {
 	private ArrayList<Long> postID = new ArrayList<Long>();
 
 	public ForumThread(int id, int catID, int auID, String name, String date,
+			Canvas parent) {
+		this.id = id;
+		this.categoryID = catID;
+		this.authorID = auID;
+		this.name = name;
+		this.date = date;
+		this.parent = parent;
+		initThread();
+	}
+
+	public ForumThread(int id, int catID, int auID, String name, String date,
 			Canvas parent, String initPost) {
 		this.id = id;
 		this.categoryID = catID;
@@ -46,22 +56,82 @@ public class ForumThread implements Serializable {
 		initThread();
 	}
 
-	public ForumThread(int id, int catID, int auID, String name, String date,
-			Canvas parent) {
-		this.id = id;
-		this.categoryID = catID;
-		this.authorID = auID;
-		this.name = name;
-		this.date = date;
-		this.parent = parent;
-		initThread();
-	}
-
 	public ForumThread(final String name, Canvas parent) {
 		this.name = name;
 		this.parent = parent;
 		initThread();
 
+	}
+
+	private void addPost(String post) {
+		AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess(Integer result) {
+				getPost();
+				currentHeight = 0;
+				draw();
+				rtEditor.setValue("");
+			}
+		};
+		forumSvc.addPost(post, id, authorID, callback);
+
+	}
+
+	public void draw() {
+
+		head.setLeft(500);
+		currentHeight += head.getHeight() + 10;
+		parent.addChild(head);
+		head.setVisible(true);
+		for (Post p : posts) {
+			p.setTop(currentHeight);
+			currentHeight += p.getHeight() + 10;
+			p.setLeft(500);
+			parent.addChild(p);
+			p.setVisible(true);
+		}
+		tail.setTop(currentHeight);
+		tail.setLeft(500);
+		tail.setVisible(true);
+		parent.addChild(tail);
+
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	private void getPost() {
+		AsyncCallback<PostData[]> callback = new AsyncCallback<PostData[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+
+			}
+
+			@Override
+			public void onSuccess(PostData[] result) {
+
+				for (int i = 0; i < result.length; i++) {
+
+					if (!postID.contains(result[i].getId())) {
+						posts.add(new Post(result[i].getId(), result[i]
+								.getTopicID(), result[i].getAuthorID(),
+								result[i].getDate(), result[i].getText()));
+						postID.add(result[i].getId());
+					}
+				}
+
+			}
+		};
+		forumSvc.getPosts(id, callback);
 	}
 
 	private void initThread() {
@@ -112,77 +182,6 @@ public class ForumThread implements Serializable {
 		tail.addChild(tailLayout);
 		// bodysection
 		getPost();
-
-	}
-
-	private void getPost() {
-		AsyncCallback<PostData[]> callback = new AsyncCallback<PostData[]>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-
-			}
-
-			@Override
-			public void onSuccess(PostData[] result) {
-
-				for (int i = 0; i < result.length; i++) {
-
-					if (!postID.contains(result[i].getId())) {
-						posts.add(new Post(result[i].getId(), result[i]
-								.getTopicID(), result[i].getAuthorID(),
-								result[i].getDate(), result[i].getText()));
-						postID.add(result[i].getId());
-					}
-				}
-
-			}
-		};
-		forumSvc.getPosts(id, callback);
-	}
-
-	private void addPost(String post) {
-		AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onSuccess(Integer result) {
-				getPost();
-				currentHeight = 0;
-				draw();
-				rtEditor.setValue("");
-			}
-		};
-		forumSvc.addPost(post, id, authorID, callback);
-
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void draw() {
-
-		head.setLeft(500);
-		currentHeight += head.getHeight() + 10;
-		parent.addChild(head);
-		head.setVisible(true);
-		for (Post p : posts) {
-			p.setTop(currentHeight);
-			currentHeight += p.getHeight() + 10;
-			p.setLeft(500);
-			parent.addChild(p);
-			p.setVisible(true);
-		}
-		tail.setTop(currentHeight);
-		tail.setLeft(500);
-		tail.setVisible(true);
-		parent.addChild(tail);
 
 	}
 

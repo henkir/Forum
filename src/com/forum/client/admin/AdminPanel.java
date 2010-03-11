@@ -2,8 +2,11 @@ package com.forum.client.admin;
 
 import java.util.Date;
 
+import com.forum.client.ForumService;
+import com.forum.client.ForumServiceAsync;
 import com.forum.client.LoginForm;
 import com.forum.client.Privileges;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Overflow;
@@ -32,7 +35,7 @@ public class AdminPanel extends Canvas {
 	/**
 	 * Admin service connection.
 	 */
-	private AdminServiceAsync adminSvc = AdminService.Util.getInstance();
+	private ForumServiceAsync adminSvc = GWT.create(ForumService.class);
 
 	/**
 	 * Callback for authorizing the user.

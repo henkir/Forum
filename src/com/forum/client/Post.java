@@ -2,8 +2,6 @@ package com.forum.client;
 
 import java.io.Serializable;
 
-import com.forum.client.admin.AdminService;
-import com.forum.client.admin.AdminServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,7 +29,7 @@ public class Post extends Canvas implements Serializable {
 	private int threadID;
 	private int authorID;
 	private String date;
-	private AdminServiceAsync adminSvc = GWT.create(AdminService.class);
+	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
 	private String userName;
 	private VStack avatarLayout = new VStack();
 	private Label nameLabel;
@@ -59,20 +57,19 @@ public class Post extends Canvas implements Serializable {
 					userName = result.getName();
 				else
 					userName = "Default User";
-				
+
 				init();
 			}
 		};
 
 		String sid = Cookies.getCookie("sid");
 
-		adminSvc.getUser(sid, callback);
-		
+		forumSvc.getUser(sid, callback);
+
 	}
-	
-	private void init(){
-		
-		
+
+	private void init() {
+
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setWidth(300);
@@ -80,7 +77,7 @@ public class Post extends Canvas implements Serializable {
 		setBackgroundColor("#b0f963");
 		setBorder("1px solid #000000");
 		nameLabel = new Label(userName);
-		
+
 		nameLabel.setWidth(50);
 		nameLabel.setHeight(20);
 		avatarLayout.setLayoutMargin(10);

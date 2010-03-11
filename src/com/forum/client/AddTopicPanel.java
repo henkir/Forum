@@ -1,9 +1,6 @@
 package com.forum.client;
 
-import java.io.Serializable;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Text;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -13,13 +10,12 @@ import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VStack;
 
 public class AddTopicPanel extends Canvas {
-	
+
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
 	private VStack layout = new VStack();
 	private RichTextEditor rtEditor;
@@ -29,10 +25,10 @@ public class AddTopicPanel extends Canvas {
 	private DynamicForm form = new DynamicForm();
 	private IButton submitButton = new IButton("Submit Topic");
 	private int catID;
-private Canvas parent, cat;
+	private Canvas parent, cat;
 
-
-	public AddTopicPanel(final int catID, final Canvas parent, final Category cat) {
+	public AddTopicPanel(final int catID, final Canvas parent,
+			final Category cat) {
 		// instance
 		super();
 		this.catID = catID;
@@ -81,33 +77,31 @@ private Canvas parent, cat;
 					SC.say("Topic name cannot be empty");
 					form.setValue("textField", "");
 
-				}
-				else if (text.equals("<br>")) {
+				} else if (text.equals("<br>")) {
 					SC.say("Post cannot be empty");
 					rtEditor.setValue("");
 
-				}else{
+				} else {
 					AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-						System.err.println("fan");
-							
+							System.err.println("fan");
+
 						}
 
 						@Override
 						public void onSuccess(Integer result) {
-							//TODO : add initial post
+							// TODO : add initial post
 							parent.removeChild(getThis());
 							cat.unhide();
-							
+
 						}
-						
+
 					};
 					forumSvc.addThread(topicName, catID, catID, callback);
-					
+
 				}
-				
 
 			}
 		});
@@ -134,8 +128,8 @@ private Canvas parent, cat;
 		addChild(layout);
 		parent.addChild(this);
 	}
-	
-	private Canvas getThis(){
+
+	private Canvas getThis() {
 		return this;
 	}
 

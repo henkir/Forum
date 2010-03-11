@@ -1,7 +1,6 @@
 package com.forum.client;
 
 import com.forum.client.admin.AdminPanel;
-import com.forum.client.admin.AdminServiceAsync;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
@@ -17,15 +16,15 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 public class LoginForm extends DynamicForm {
 
-	private AdminServiceAsync adminSvc;
+	private ForumServiceAsync forumSvc;
 	private AsyncCallback<String> callbackLogin;
 	private AdminPanel adminPanel;
 
 	private TextItem usernameItem = new TextItem();
 	private PasswordItem passwordItem = new PasswordItem();
 
-	public LoginForm(AdminServiceAsync adminService, AdminPanel adminPanel) {
-		this.adminSvc = adminService;
+	public LoginForm(ForumServiceAsync forumService, AdminPanel adminPanel) {
+		this.forumSvc = forumService;
 		this.adminPanel = adminPanel;
 		createCallbacks();
 
@@ -79,6 +78,11 @@ public class LoginForm extends DynamicForm {
 		callbackLogin = new AsyncCallback<String>() {
 
 			@Override
+			public void onFailure(Throwable caught) {
+				SC.say("Failure", "Failed to log in.");
+			}
+
+			@Override
 			public void onSuccess(String result) {
 				if (result != null) {
 					adminPanel.reload(result);
@@ -89,24 +93,19 @@ public class LoginForm extends DynamicForm {
 					passwordItem.getDisplayValue("");
 				}
 			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.say("Failure", "Failed to log in.");
-			}
 		};
+	}
+
+	public void submit() {
+		String sid = Cookies.getCookie("sid");
+		forumSvc.logIn(usernameItem.getDisplayValue(), passwordItem
+				.getDisplayValue(), sid, callbackLogin);
 	}
 
 	private void validateAndSubmit() {
 		if (validate()) {
 			submit();
 		}
-	}
-
-	public void submit() {
-		String sid = Cookies.getCookie("sid");
-		adminSvc.logIn(usernameItem.getDisplayValue(), passwordItem
-				.getDisplayValue(), sid, callbackLogin);
 	}
 
 }

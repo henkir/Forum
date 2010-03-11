@@ -18,11 +18,24 @@ import com.smartgwt.client.widgets.events.ClickHandler;
  * 
  */
 public class Forum implements EntryPoint {
+	private class ButtonClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			if (event.getSource() == adminButton) {
+				showAdminPanel();
+			} else if (event.getSource() == forumButton) {
+				showForumPanel();
+			}
+		}
+
+	}
 	final VerticalPanel panel = new VerticalPanel();
 	Canvas forumCanvas = new Canvas();
 	CategoryList catList = new CategoryList(forumCanvas);
 	final Image banner = new Image("images/forum_banner.png");
 	Button adminButton = new Button("Admin panel");
+
 	Button forumButton = new Button("Forum panel");
 
 	ButtonClickHandler buttonClickHandler = new ButtonClickHandler();
@@ -41,17 +54,6 @@ public class Forum implements EntryPoint {
 
 	}
 
-	private void showForumPanel() {
-		panel.clear();
-		// Click handlers stop working after one click???
-		adminButton = new Button("Admin panel");
-		adminButton.addClickHandler(buttonClickHandler);
-		panel.add(adminButton);
-		panel.add(banner);
-
-		panel.add(forumCanvas);
-	}
-
 	private void showAdminPanel() {
 		panel.clear();
 		forumButton = new Button("Forum panel");
@@ -61,16 +63,14 @@ public class Forum implements EntryPoint {
 		panel.add(new AdminPanel());
 	}
 
-	private class ButtonClickHandler implements ClickHandler {
+	private void showForumPanel() {
+		panel.clear();
+		// Click handlers stop working after one click???
+		adminButton = new Button("Admin panel");
+		adminButton.addClickHandler(buttonClickHandler);
+		panel.add(adminButton);
+		panel.add(banner);
 
-		@Override
-		public void onClick(ClickEvent event) {
-			if (event.getSource() == adminButton) {
-				showAdminPanel();
-			} else if (event.getSource() == forumButton) {
-				showForumPanel();
-			}
-		}
-
+		panel.add(forumCanvas);
 	}
 }

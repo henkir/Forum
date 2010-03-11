@@ -1,5 +1,6 @@
 package com.forum.client.admin;
 
+import com.forum.client.ForumServiceAsync;
 import com.forum.client.Privileges;
 import com.forum.client.User;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -23,7 +24,7 @@ public class UserListGrid extends ListGrid {
 	/**
 	 * Admin service connection.
 	 */
-	private AdminServiceAsync adminSvc;
+	private ForumServiceAsync forumSvc;
 
 	/**
 	 * Callback for getting the privilege level of the user.
@@ -43,18 +44,18 @@ public class UserListGrid extends ListGrid {
 	 * Creates a new UserListGrid that uses the given service to communicate
 	 * with the server.
 	 * 
-	 * @param adminService
+	 * @param forumService
 	 *            the service to use
 	 */
-	public UserListGrid(AdminServiceAsync adminService, String sid) {
+	public UserListGrid(ForumServiceAsync forumService, String sid) {
 		super();
-		this.adminSvc = adminService;
+		this.forumSvc = forumService;
 		this.sid = sid;
 
 		init();
 
 		createCallbacks();
-		adminSvc.getPrivileges(sid, callbackInit);
+		forumSvc.getPrivileges(sid, callbackInit);
 	}
 
 	/**
@@ -115,7 +116,7 @@ public class UserListGrid extends ListGrid {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (!result) {
-					adminSvc.getUsers(null, callbackGetUsers);
+					forumSvc.getUsers(null, callbackGetUsers);
 					SC.say("Update failure", "Failed to update users.");
 				} else {
 					SC.say("Update successful", "Successfully updated users.");
@@ -129,7 +130,7 @@ public class UserListGrid extends ListGrid {
 	 * Gets all users with the same privileges or less from the server.
 	 */
 	public void getUsers() {
-		adminSvc.getUsers(sid, callbackGetUsers);
+		forumSvc.getUsers(sid, callbackGetUsers);
 	}
 
 	/**
@@ -201,7 +202,7 @@ public class UserListGrid extends ListGrid {
 			users[i] = user;
 		}
 
-		adminSvc.setUsers(users, sid, callbackSetUsers);
+		forumSvc.setUsers(users, sid, callbackSetUsers);
 	}
 
 }

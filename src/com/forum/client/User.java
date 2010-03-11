@@ -10,27 +10,18 @@ public class User implements Serializable {
 	private static final long serialVersionUID = -7136270130312848857L;
 	private int id = 0;
 
-	/**
-	 * @return the id
-	 */
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	private String name = null;
-	private Privileges privileges = Privileges.MEMBER;
-	private boolean changed = false;
 
+	private Privileges privileges = Privileges.MEMBER;
+
+	private boolean changed = false;
 	public User() {
 
+	}
+	public User(int id, String name, Privileges privileges) {
+		this.name = name;
+		this.privileges = privileges;
+		this.id = id;
 	}
 
 	public User(String name, Privileges privileges) {
@@ -38,16 +29,17 @@ public class User implements Serializable {
 		this.privileges = privileges;
 	}
 
-	public User(int id, String name, Privileges privileges) {
-		this.name = name;
-		this.privileges = privileges;
-		this.id = id;
-	}
-
 	public User(String name, Privileges privileges, boolean changed) {
 		this.name = name;
 		this.privileges = privileges;
 		this.changed = changed;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 
 	/**
@@ -77,6 +69,14 @@ public class User implements Serializable {
 	 */
 	public void setChanged(boolean changed) {
 		this.changed = changed;
+	}
+
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**

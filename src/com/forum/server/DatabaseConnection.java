@@ -21,7 +21,7 @@ public class DatabaseConnection {
 	/**
 	 * Contains the host address.
 	 */
-	private String host = "192.168.0.103";
+	private String host = "127.0.0.1";
 	/**
 	 * Contains the username to login with.
 	 */
@@ -122,6 +122,19 @@ public class DatabaseConnection {
 	}
 
 	/**
+	 * Closes the connection if there is any established.
+	 */
+	public void close() {
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				System.err.println("ERROR: " + e.toString());
+			}
+		}
+	}
+
+	/**
 	 * Connects to a MySQL server using the current details. Catches
 	 * ClassNotFoundException which will occur if JDBC or MySQL support is not
 	 * installed. Also catches SQLException which will occur if any of the login
@@ -144,16 +157,24 @@ public class DatabaseConnection {
 	}
 
 	/**
-	 * Closes the connection if there is any established.
+	 * @return the host
 	 */
-	public void close() {
-		if (connection != null) {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				System.err.println("ERROR: " + e.toString());
-			}
-		}
+	public String getHost() {
+		return host;
+	}
+
+	/**
+	 * @return the database name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPass() {
+		return pass;
 	}
 
 	/**
@@ -176,63 +197,10 @@ public class DatabaseConnection {
 	}
 
 	/**
-	 * @return the host
-	 */
-	public String getHost() {
-		return host;
-	}
-
-	/**
-	 * @param host
-	 *            the host to set
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	/**
 	 * @return the username
 	 */
 	public String getUser() {
 		return user;
-	}
-
-	/**
-	 * @param user
-	 *            the username to set
-	 */
-	public void setUser(String user) {
-		this.user = user;
-	}
-
-	/**
-	 * @return the password
-	 */
-	public String getPass() {
-		return pass;
-	}
-
-	/**
-	 * @param pass
-	 *            the password to set
-	 */
-	public void setPass(String pass) {
-		this.pass = pass;
-	}
-
-	/**
-	 * @return the database name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name
-	 *            the database name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -246,6 +214,38 @@ public class DatabaseConnection {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * @param host
+	 *            the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	/**
+	 * @param name
+	 *            the database name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @param pass
+	 *            the password to set
+	 */
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	/**
+	 * @param user
+	 *            the username to set
+	 */
+	public void setUser(String user) {
+		this.user = user;
 	}
 
 }

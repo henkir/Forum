@@ -2,11 +2,8 @@ package com.forum.client;
 
 import java.util.ArrayList;
 
-import com.forum.client.admin.AdminService;
-import com.forum.client.admin.AdminServiceAsync;
 import com.forum.client.data.TopicData;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -28,14 +25,9 @@ public class Category extends Canvas {
 	private int currentHeight = 0;
 	private ForumThread currentThread = null;
 
-
 	public Category(String name, int id, final Canvas parent) {
 		super();
 
-		
-		
-		
-		
 		setCanDragReposition(false);
 		setCanDragResize(false);
 		setWidth(600);
@@ -86,47 +78,6 @@ public class Category extends Canvas {
 		getTopics();
 	}
 
-	private Category getThis() {
-		return this;
-	}
-
-	public void setTopic(ForumThread topic) {
-		topic.draw();
-		currentThread = topic;
-	}
-	
-	private void getTopics() {
-		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				System.err.println("detta sög ju");
-
-			}
-
-			@Override
-			public void onSuccess(TopicData[] result) {
-				for (int i = 0; i < result.length; i++) {
-
-					if (!topics.contains(result[i].getId())) {
-						addThread(new ForumThread(result[i].getId(), result[i]
-								.getCategoryID(), result[i].getAuthorID(),
-								result[i].getName(), result[i].getDate(),
-								parent));
-						topics.add(result[i].getId());
-					}
-				}
-
-			}
-		};
-		forumSvc.getThreads(catid, callback);
-	}
-
-	private void killThread() {
-		currentThread.kill();
-		currentThread = null;
-	}
-
 	public void addThread(final ForumThread topic) {
 		final Label label = new Label("<div class='category'>"
 				+ topic.getName() + "</div>");
@@ -154,6 +105,37 @@ public class Category extends Canvas {
 		return name;
 	}
 
+	private Category getThis() {
+		return this;
+	}
+
+	private void getTopics() {
+		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("detta sög ju");
+
+			}
+
+			@Override
+			public void onSuccess(TopicData[] result) {
+				for (int i = 0; i < result.length; i++) {
+
+					if (!topics.contains(result[i].getId())) {
+						addThread(new ForumThread(result[i].getId(), result[i]
+								.getCategoryID(), result[i].getAuthorID(),
+								result[i].getName(), result[i].getDate(),
+								parent));
+						topics.add(result[i].getId());
+					}
+				}
+
+			}
+		};
+		forumSvc.getThreads(catid, callback);
+	}
+
 	public void hide() {
 		animateRect(250, 0, 200, getHeight(), null, 1000);
 		for (Label l : labels)
@@ -164,8 +146,18 @@ public class Category extends Canvas {
 		hidden = true;
 	}
 
+	private void killThread() {
+		currentThread.kill();
+		currentThread = null;
+	}
+
+	public void setTopic(ForumThread topic) {
+		topic.draw();
+		currentThread = topic;
+	}
+
 	public void unhide() {
-	
+
 		animateRect(500, 0, 600, getHeight(), null, 1000);
 		getTopics();
 		for (Label l : labels)
