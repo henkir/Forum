@@ -1,16 +1,17 @@
 package com.forum.server;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.forum.client.ForumService;
-import com.forum.client.Privileges;
-import com.forum.client.User;
 import com.forum.client.data.CategoryData;
+import com.forum.client.data.ForumService;
 import com.forum.client.data.PostData;
+import com.forum.client.data.Privileges;
 import com.forum.client.data.TopicData;
+import com.forum.client.data.User;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class ForumServiceImpl extends RemoteServiceServlet implements
@@ -27,11 +28,15 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public int addPost(String text, int thrID, int authID) {
 
-		String query = "INSERT INTO posts(topic_id,author_id,time_posted,post) VALUES ("
-				+ thrID + ", " + authID + ", NOW(), '" + text + "');";
-		Statement statement = connection.getStatement();
+		String query = "INSERT INTO posts(topic_id,author_id,time_posted,post) VALUES (?, ?, NOW(), ?);";
+
 		try {
-			statement.executeUpdate(query);
+			PreparedStatement statement = connection
+					.getPreparedStatement(query);
+			statement.setInt(1, thrID);
+			statement.setInt(2, authID);
+			statement.setString(3, text);
+			statement.executeUpdate();
 		} catch (SQLException e) {
 
 			e.printStackTrace();
@@ -41,11 +46,15 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public int addThread(String name, int catID, int authID) {
-		String query = "INSERT INTO topics(category_id, author_id, name, time_created) VALUES ("
-				+ catID + ", " + authID + ", '" + name + "', NOW());";
-		Statement statement = connection.getStatement();
+		String query = "INSERT INTO topics(category_id, author_id, name, time_created) VALUES (?, ?, ?, NOW());";
+
 		try {
-			statement.executeUpdate(query);
+			PreparedStatement statement = connection
+					.getPreparedStatement(query);
+			statement.setInt(1, catID);
+			statement.setInt(2, authID);
+			statement.setString(3, name);
+			statement.executeUpdate();
 		} catch (SQLException e) {
 
 		}
@@ -79,11 +88,13 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 		ArrayList<PostData> result = new ArrayList<PostData>();
 		ResultSet rs;
-		String query = "SELECT t1.id, t1.time_posted, t1.post, t2.id AS author FROM posts AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.topic_id = '"
-				+ threadID + "' ORDER BY t1.time_posted;";
-		Statement statement = connection.getStatement();
+		String query = "SELECT t1.id, t1.time_posted, t1.post, t2.id AS author FROM posts AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.topic_id = ? ORDER BY t1.time_posted;";
+
 		try {
-			rs = statement.executeQuery(query);
+			PreparedStatement statement = connection
+					.getPreparedStatement(query);
+			statement.setInt(1, threadID);
+			rs = statement.executeQuery();
 			while (rs.next()) {
 				String date = rs.getString("time_posted");
 				String text = rs.getString("post");
@@ -113,11 +124,13 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	public TopicData[] getThreads(int categoryID) {
 		ArrayList<TopicData> result = new ArrayList<TopicData>();
 		ResultSet rs;
-		String query = "SELECT t1.id, t1.name, t1.time_created,t1.category_id, t2.id AS author FROM topics AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.category_id = '"
-				+ categoryID + "' ORDER BY t1.time_created;";
-		Statement statement = connection.getStatement();
+		String query = "SELECT t1.id, t1.name, t1.time_created,t1.category_id, t2.id AS author FROM topics AS t1 INNER JOIN users AS t2 ON t1.author_id = t2.id WHERE t1.category_id = ? ORDER BY t1.time_created;";
+
 		try {
-			rs = statement.executeQuery(query);
+			PreparedStatement statement = connection
+					.getPreparedStatement(query);
+			statement.setInt(1, categoryID);
+			rs = statement.executeQuery();
 			while (rs.next()) {
 				String date = rs.getString("time_created");
 				String name = rs.getString("name");
@@ -148,11 +161,12 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 			int privileges = Privileges.getInteger(LoginHandler.getUser(sid)
 					.getPrivileges());
-			String query = "SELECT username, priv_level FROM users WHERE priv_level <= "
-					+ privileges + ";";
-			Statement statement = connection.getStatement();
+			String query = "SELECT username, priv_level FROM users WHERE priv_level <= ?;";
 			try {
-				ResultSet rs = statement.executeQuery(query);
+				PreparedStatement statement = connection
+						.getPreparedStatement(query);
+				statement.setInt(1, privileges);
+				ResultSet rs = statement.executeQuery();
 				ArrayList<User> users = new ArrayList<User>();
 				Privileges tempPrivs;
 				String tempName;
@@ -205,13 +219,15 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			String querySelect2 = "";
 
 			try {
-				Statement statement = connection.getStatement();
+				querySelect = "SELECT id FROM categories;";
+				PreparedStatement statement = connection
+						.getPreparedStatement(querySelect);
 				String name;
 				String description;
 
 				ResultSet rs;
-				querySelect = "SELECT id FROM categories;";
-				rs = statement.executeQuery(querySelect);
+
+				rs = statement.executeQuery();
 				int tempId;
 				boolean remove;
 				while (rs.next()) {
@@ -225,9 +241,11 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 							}
 						}
 						if (remove) {
-							queryDelete = "DELETE FROM categories WHERE id = "
-									+ tempId + ";";
-							statement.executeUpdate(queryDelete);
+							queryDelete = "DELETE FROM categories WHERE id = ?;";
+							statement = connection
+									.getPreparedStatement(queryDelete);
+							statement.setInt(1, tempId);
+							statement.executeUpdate();
 						}
 					}
 				}
@@ -236,25 +254,28 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 					description = categories[i].getDescription();
 					if (name.length() >= 3 && name.length() <= 20
 							&& description.length() <= 100) {
-						querySelect2 = "SELECT id FROM categories WHERE name = '"
-								+ name + "';";
-						rs = statement.executeQuery(querySelect2);
+						querySelect2 = "SELECT id FROM categories WHERE name = ?;";
+						statement = connection
+								.getPreparedStatement(querySelect2);
+						statement.setString(1, name);
+						rs = statement.executeQuery();
 						if (rs.next()) {
-							queryUpdate = "UPDATE categories SET name = '"
-									+ name + "', description = '" + description
-									+ "', position = " + (i + 1)
-									+ " WHERE id = " + categories[i].getId()
-									+ ";";
-							statement.executeUpdate(queryUpdate);
+							queryUpdate = "UPDATE categories SET name = ?, description = ?, position = ? WHERE id = ?;";
+							statement = connection
+									.getPreparedStatement(queryUpdate);
+							statement.setString(1, name);
+							statement.setString(2, description);
+							statement.setInt(3, i + 1);
+							statement.setInt(4, categories[i].getId());
+							statement.executeUpdate();
 						} else {
-							queryInsert = "INSERT INTO categories(name, description, position) VALUES('"
-									+ name
-									+ "', '"
-									+ description
-									+ "', "
-									+ i
-									+ ");";
-							statement.executeUpdate(queryInsert);
+							queryInsert = "INSERT INTO categories(name, description, position) VALUES(?, ?, ?);";
+							statement = connection
+									.getPreparedStatement(queryInsert);
+							statement.setString(1, name);
+							statement.setString(2, description);
+							statement.setInt(3, i);
+							statement.executeUpdate();
 						}
 					}
 				}
@@ -274,15 +295,18 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			String queryUpdate = "";
 
 			try {
-				Statement statement = connection.getStatement();
-				String name;
-				Privileges privileges;
+				querySelect = "SELECT username FROM users WHERE priv_level <= ?;";
 				int curPrivs = Privileges.getInteger(LoginHandler.getUser(sid)
 						.getPrivileges());
+				PreparedStatement statement = connection
+						.getPreparedStatement(querySelect);
+				statement.setInt(1, curPrivs);
+
+				String name;
+				Privileges privileges;
 				ResultSet rs;
-				querySelect = "SELECT username FROM users WHERE priv_level <= "
-						+ curPrivs + ";";
-				rs = statement.executeQuery(querySelect);
+
+				rs = statement.executeQuery();
 				String tempName;
 				boolean remove;
 				while (rs.next()) {
@@ -296,9 +320,11 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 						}
 					}
 					if (remove) {
-						queryDelete = "DELETE FROM users WHERE username = '"
-								+ tempName + "';";
-						statement.executeUpdate(queryDelete);
+						queryDelete = "DELETE FROM users WHERE username = ?;";
+						statement = connection
+								.getPreparedStatement(queryDelete);
+						statement.setString(1, tempName);
+						statement.executeUpdate();
 					}
 				}
 				boolean edited;
@@ -307,10 +333,12 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 					if (edited) {
 						name = users[i].getName();
 						privileges = users[i].getPrivileges();
-						queryUpdate = "UPDATE users SET priv_level = "
-								+ Privileges.getInteger(privileges)
-								+ " WHERE username = '" + name + "';";
-						statement.executeUpdate(queryUpdate);
+						queryUpdate = "UPDATE users SET priv_level = ? WHERE username = ?;";
+						statement = connection
+								.getPreparedStatement(queryUpdate);
+						statement.setInt(1, Privileges.getInteger(privileges));
+						statement.setString(2, name);
+						statement.executeUpdate();
 					}
 
 				}
@@ -318,6 +346,21 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean register(String username, String password) {
+		String query = "INSERT INTO users(username, password) VALUES(?, SHA1(?));";
+		PreparedStatement statement = connection.getPreparedStatement(query);
+		try {
+			statement.setString(1, username);
+			statement.setString(2, password);
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

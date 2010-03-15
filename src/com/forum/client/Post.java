@@ -2,6 +2,9 @@ package com.forum.client;
 
 import java.io.Serializable;
 
+import com.forum.client.data.ForumService;
+import com.forum.client.data.ForumServiceAsync;
+import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;

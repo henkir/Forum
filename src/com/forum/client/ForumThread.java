@@ -3,6 +3,8 @@ package com.forum.client;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.forum.client.data.ForumService;
+import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.PostData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

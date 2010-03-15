@@ -1,9 +1,9 @@
 package com.forum.client.admin;
 
-import com.forum.client.ForumServiceAsync;
-import com.forum.client.Privileges;
-import com.forum.client.SessionHandler;
-import com.forum.client.User;
+import com.forum.client.data.ForumServiceAsync;
+import com.forum.client.data.Privileges;
+import com.forum.client.data.SessionHandler;
+import com.forum.client.data.User;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.util.SC;

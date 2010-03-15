@@ -1,5 +1,7 @@
 package com.forum.client;
 
+import com.forum.client.data.ForumService;
+import com.forum.client.data.ForumServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;

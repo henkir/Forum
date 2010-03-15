@@ -1,6 +1,7 @@
-package com.forum.client;
+package com.forum.client.data;
 
 import java.io.Serializable;
+
 
 public class User implements Serializable {
 

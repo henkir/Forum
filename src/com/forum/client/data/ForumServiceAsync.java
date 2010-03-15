@@ -1,14 +1,8 @@
-package com.forum.client;
+package com.forum.client.data;
 
-import com.forum.client.data.CategoryData;
-import com.forum.client.data.PostData;
-import com.forum.client.data.TopicData;
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-@RemoteServiceRelativePath("forumTasks")
-public interface ForumService extends RemoteService {
-
+public interface ForumServiceAsync {
 	/**
 	 * Adds a new Post to a Thread returns the ID.
 	 * 
@@ -20,7 +14,8 @@ public interface ForumService extends RemoteService {
 	 *            the author ID
 	 * @return the ID of the Post
 	 */
-	int addPost(String text, int thrID, int authID);
+	void addPost(String text, int thrID, int authID,
+			AsyncCallback<Integer> callback);
 
 	/**
 	 * Adds a Thread to a Category and returns the ID.
@@ -33,14 +28,15 @@ public interface ForumService extends RemoteService {
 	 *            the author ID
 	 * @return the ID of the Thread
 	 */
-	int addThread(String name, int catID, int authID);
+	void addThread(String name, int catID, int authID,
+			AsyncCallback<Integer> callback);
 
 	/**
 	 * Gets all Categories.
 	 * 
 	 * @return the Categories
 	 */
-	CategoryData[] getCategories();
+	void getCategories(AsyncCallback<CategoryData[]> callback);
 
 	/**
 	 * Gets all Posts in a Thread
@@ -49,7 +45,7 @@ public interface ForumService extends RemoteService {
 	 *            the ID of the Thread
 	 * @return the Posts
 	 */
-	PostData[] getPosts(int threadID);
+	void getPosts(int threadID, AsyncCallback<PostData[]> callback);
 
 	/**
 	 * Get the privileges of the currently logged in User.
@@ -58,7 +54,7 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return the Privileges
 	 */
-	Privileges getPrivileges(String sid);
+	void getPrivileges(String sid, AsyncCallback<Privileges> callback);
 
 	/**
 	 * Gets all Threads in a Category.
@@ -67,7 +63,7 @@ public interface ForumService extends RemoteService {
 	 *            the Category ID
 	 * @return the Threads
 	 */
-	TopicData[] getThreads(int categoryID);
+	void getThreads(int categoryID, AsyncCallback<TopicData[]> callback);
 
 	/**
 	 * Gets the currently logged in User.
@@ -76,7 +72,7 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return the logged in User, or null
 	 */
-	User getUser(String sid);
+	void getUser(String sid, AsyncCallback<User> user);
 
 	/**
 	 * Gets all Users that the currently logged in User is privileged to modify.
@@ -85,7 +81,7 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return the Users
 	 */
-	User[] getUsers(String sid);
+	void getUsers(String sid, AsyncCallback<User[]> users);
 
 	/**
 	 * Checks if a User has enough Privileges.
@@ -97,7 +93,8 @@ public interface ForumService extends RemoteService {
 	 * @return 0 if User is not logged in, 1 if the Privileges is too low, 2 if
 	 *         User has the Privileges
 	 */
-	int hasPrivileges(Privileges privilegeLevel, String sid);
+	void hasPrivileges(Privileges privilegeLevel, String sid,
+			AsyncCallback<Integer> callback);
 
 	/**
 	 * Logs in a User if username and password are correct. Make sure to use the
@@ -111,7 +108,8 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return the new session ID
 	 */
-	String logIn(String username, String password, String sid);
+	void logIn(String username, String password, String sid,
+			AsyncCallback<String> callback);
 
 	/**
 	 * Logs out the currently logged in User.
@@ -119,7 +117,19 @@ public interface ForumService extends RemoteService {
 	 * @param sid
 	 *            the session ID
 	 */
-	String logOut(String sid);
+	void logOut(String sid, AsyncCallback<String> callback);
+
+	/**
+	 * Registers a user with the specified details.
+	 * 
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @return true if successful, otherwise false
+	 */
+	void register(String username, String password,
+			AsyncCallback<Boolean> callback);
 
 	/**
 	 * Sets the Categories in the database to match those of the array, if the
@@ -131,7 +141,8 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return true if successful, otherwise false
 	 */
-	boolean setCategories(CategoryData[] categories, String sid);
+	void setCategories(CategoryData[] categories, String sid,
+			AsyncCallback<Boolean> callback);
 
 	/**
 	 * Sets the Users in the database to match those of the array, with the
@@ -143,6 +154,6 @@ public interface ForumService extends RemoteService {
 	 *            the session ID
 	 * @return true if successful, otherwise false
 	 */
-	boolean setUsers(User[] users, String sid);
+	void setUsers(User[] users, String sid, AsyncCallback<Boolean> callback);
 
 }

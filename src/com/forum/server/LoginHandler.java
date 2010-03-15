@@ -1,15 +1,15 @@
 package com.forum.server;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Map.Entry;
 
-import com.forum.client.Privileges;
-import com.forum.client.User;
+import com.forum.client.data.Privileges;
+import com.forum.client.data.User;
 
 /**
  * A static class that keeps track of logged in users and provides methods for
@@ -129,18 +129,18 @@ public class LoginHandler {
 	 * @return the new session id
 	 */
 	public static String logIn(String username, String password, String sid) {
-		Statement statement = connection.getStatement();
-		String query;
+		String query = "SELECT id, username, priv_level FROM users WHERE username = ? AND password = SHA1(?);";
+		PreparedStatement statement = connection.getPreparedStatement(query);
 
 		if (sid != null && loggedInUsers.containsKey(sid)) {
 			return sid;
 		}
 
 		ResultSet rs;
-		query = "SELECT id, username, priv_level FROM users WHERE username = '"
-				+ username + "' AND password = SHA1('" + password + "');";
 		try {
-			rs = statement.executeQuery(query);
+			statement.setString(1, username);
+			statement.setString(2, password);
+			rs = statement.executeQuery();
 			if (rs.next()) {
 				int id = rs.getInt("id");
 				String name = rs.getString("username");

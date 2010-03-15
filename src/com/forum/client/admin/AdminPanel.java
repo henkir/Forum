@@ -1,10 +1,10 @@
 package com.forum.client.admin;
 
-import com.forum.client.ForumService;
-import com.forum.client.ForumServiceAsync;
 import com.forum.client.LoginForm;
-import com.forum.client.Privileges;
-import com.forum.client.SessionHandler;
+import com.forum.client.data.ForumService;
+import com.forum.client.data.ForumServiceAsync;
+import com.forum.client.data.Privileges;
+import com.forum.client.data.SessionHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Overflow;

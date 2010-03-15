@@ -1,4 +1,4 @@
-package com.forum.client;
+package com.forum.client.data;
 
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.fields.DataSourcePasswordField;

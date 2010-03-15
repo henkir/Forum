@@ -1,4 +1,4 @@
-package com.forum.client;
+package com.forum.client.data;
 
 public enum Privileges {
 

@@ -1,4 +1,4 @@
-package com.forum.client;
+package com.forum.client.data;
 
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
@@ -12,7 +12,7 @@ import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 public class RegistrationForm extends DynamicForm {
 
 	public RegistrationForm() {
-		setDataSource(new RegistrationDataSource());
+		setDataSource(new RegisterDataSource());
 		setUseAllDataSourceFields(true);
 
 		HeaderItem header = new HeaderItem();

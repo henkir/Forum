@@ -1,11 +1,11 @@
-package com.forum.client;
+package com.forum.client.data;
 
-import com.forum.client.data.CategoryData;
-import com.forum.client.data.PostData;
-import com.forum.client.data.TopicData;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-public interface ForumServiceAsync {
+@RemoteServiceRelativePath("forumTasks")
+public interface ForumService extends RemoteService {
+
 	/**
 	 * Adds a new Post to a Thread returns the ID.
 	 * 
@@ -17,8 +17,7 @@ public interface ForumServiceAsync {
 	 *            the author ID
 	 * @return the ID of the Post
 	 */
-	void addPost(String text, int thrID, int authID,
-			AsyncCallback<Integer> callback);
+	int addPost(String text, int thrID, int authID);
 
 	/**
 	 * Adds a Thread to a Category and returns the ID.
@@ -31,15 +30,14 @@ public interface ForumServiceAsync {
 	 *            the author ID
 	 * @return the ID of the Thread
 	 */
-	void addThread(String name, int catID, int authID,
-			AsyncCallback<Integer> callback);
+	int addThread(String name, int catID, int authID);
 
 	/**
 	 * Gets all Categories.
 	 * 
 	 * @return the Categories
 	 */
-	void getCategories(AsyncCallback<CategoryData[]> callback);
+	CategoryData[] getCategories();
 
 	/**
 	 * Gets all Posts in a Thread
@@ -48,7 +46,7 @@ public interface ForumServiceAsync {
 	 *            the ID of the Thread
 	 * @return the Posts
 	 */
-	void getPosts(int threadID, AsyncCallback<PostData[]> callback);
+	PostData[] getPosts(int threadID);
 
 	/**
 	 * Get the privileges of the currently logged in User.
@@ -57,7 +55,7 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return the Privileges
 	 */
-	void getPrivileges(String sid, AsyncCallback<Privileges> callback);
+	Privileges getPrivileges(String sid);
 
 	/**
 	 * Gets all Threads in a Category.
@@ -66,7 +64,7 @@ public interface ForumServiceAsync {
 	 *            the Category ID
 	 * @return the Threads
 	 */
-	void getThreads(int categoryID, AsyncCallback<TopicData[]> callback);
+	TopicData[] getThreads(int categoryID);
 
 	/**
 	 * Gets the currently logged in User.
@@ -75,7 +73,7 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return the logged in User, or null
 	 */
-	void getUser(String sid, AsyncCallback<User> user);
+	User getUser(String sid);
 
 	/**
 	 * Gets all Users that the currently logged in User is privileged to modify.
@@ -84,7 +82,7 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return the Users
 	 */
-	void getUsers(String sid, AsyncCallback<User[]> users);
+	User[] getUsers(String sid);
 
 	/**
 	 * Checks if a User has enough Privileges.
@@ -96,8 +94,7 @@ public interface ForumServiceAsync {
 	 * @return 0 if User is not logged in, 1 if the Privileges is too low, 2 if
 	 *         User has the Privileges
 	 */
-	void hasPrivileges(Privileges privilegeLevel, String sid,
-			AsyncCallback<Integer> callback);
+	int hasPrivileges(Privileges privilegeLevel, String sid);
 
 	/**
 	 * Logs in a User if username and password are correct. Make sure to use the
@@ -111,8 +108,7 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return the new session ID
 	 */
-	void logIn(String username, String password, String sid,
-			AsyncCallback<String> callback);
+	String logIn(String username, String password, String sid);
 
 	/**
 	 * Logs out the currently logged in User.
@@ -120,7 +116,18 @@ public interface ForumServiceAsync {
 	 * @param sid
 	 *            the session ID
 	 */
-	void logOut(String sid, AsyncCallback<String> callback);
+	String logOut(String sid);
+
+	/**
+	 * Registers a user with the specified details.
+	 * 
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @return true if successful, otherwise false
+	 */
+	boolean register(String username, String password);
 
 	/**
 	 * Sets the Categories in the database to match those of the array, if the
@@ -132,8 +139,7 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return true if successful, otherwise false
 	 */
-	void setCategories(CategoryData[] categories, String sid,
-			AsyncCallback<Boolean> callback);
+	boolean setCategories(CategoryData[] categories, String sid);
 
 	/**
 	 * Sets the Users in the database to match those of the array, with the
@@ -145,6 +151,6 @@ public interface ForumServiceAsync {
 	 *            the session ID
 	 * @return true if successful, otherwise false
 	 */
-	void setUsers(User[] users, String sid, AsyncCallback<Boolean> callback);
+	boolean setUsers(User[] users, String sid);
 
 }

@@ -2,6 +2,7 @@ package com.forum.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -191,6 +192,22 @@ public class DatabaseConnection {
 			System.err.println("ERROR: " + e.toString());
 			return null;
 		} catch (NullPointerException e) {
+			System.err.println("ERROR: " + e.toString());
+			return null;
+		}
+	}
+
+	/**
+	 * Returns a PreparedStatement.
+	 * 
+	 * @param sql
+	 *            the query
+	 * @return the PreparedStatement, or null
+	 */
+	public PreparedStatement getPreparedStatement(String sql) {
+		try {
+			return connection.prepareStatement(sql);
+		} catch (SQLException e) {
 			System.err.println("ERROR: " + e.toString());
 			return null;
 		}
