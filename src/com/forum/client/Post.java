@@ -6,7 +6,6 @@ import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;
@@ -64,9 +63,7 @@ public class Post extends Canvas implements Serializable {
 			}
 		};
 
-		String sid = Cookies.getCookie("sid");
-
-		forumSvc.getUser(sid, callback);
+		forumSvc.getUser(authorID, callback);
 
 	}
 
@@ -87,7 +84,7 @@ public class Post extends Canvas implements Serializable {
 		avatarLayout.addMember(nameLabel);
 		avatarLayout.addMember(avatar);
 
-		layout.setWidth(500);
+		layout.setWidth(550);
 		layout.setHeight(200);
 		layout.setLayoutMargin(10);
 		layout.setMembersMargin(5);

@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.PostData;
+import com.forum.client.data.SessionHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -25,7 +26,7 @@ public class ForumThread implements Serializable {
 	private Canvas head, tail;
 	private VStack tailLayout;
 	private RichTextEditor rtEditor;
-	private Button submitButton;
+	private IButton submitButton;
 	private Label title;
 	private ArrayList<Post> posts = new ArrayList<Post>();
 	private int currentHeight = 0;
@@ -102,7 +103,21 @@ public class ForumThread implements Serializable {
 		tail.setTop(currentHeight);
 		tail.setLeft(500);
 		tail.setVisible(true);
-		parent.addChild(tail);
+		forumSvc.isLoggedIn(SessionHandler.getSessionId(),
+				new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							parent.addChild(tail);
+						}
+					}
+				});
 
 	}
 
@@ -145,7 +160,7 @@ public class ForumThread implements Serializable {
 		head.addChild(title);
 		// head.setContents(name);
 		head.setHeight(30);
-		head.setWidth(500);
+		head.setWidth(550);
 		head.setBackgroundColor("#b0f963");
 		head.setBorder("1px solid #000000");
 		head.setCanDragReposition(false);
@@ -158,7 +173,7 @@ public class ForumThread implements Serializable {
 		tailLayout = new VStack();
 		tailLayout.setMembersMargin(5);
 		tailLayout.setLayoutMargin(10);
-		final Label postLabel = new Label("<h3>Post a post here</h3>");
+		final Label postLabel = new Label("<h3>Post a reply</h3>");
 		postLabel.setWidth(200);
 		postLabel.setHeight(30);
 		tailLayout.addMember(postLabel);
@@ -171,7 +186,7 @@ public class ForumThread implements Serializable {
 		rtEditor.setBackgroundColor("#b0f963");
 		tailLayout.addMember(rtEditor);
 
-		submitButton = new Button("Submit!");
+		submitButton = new IButton("Submit!");
 		submitButton.addClickHandler(new ClickHandler() {
 
 			@Override

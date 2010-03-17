@@ -27,7 +27,7 @@ public class RegisterWindow extends Window {
 		this.forumSvc = forumSvc;
 		this.callback = callback;
 
-		setTitle("Log in");
+		setTitle("Register");
 		setShowMinimizeButton(false);
 		setIsModal(true);
 		setShowModalMask(true);
@@ -97,4 +97,5 @@ public class RegisterWindow extends Window {
 			hide();
 		}
 	}
+
 }

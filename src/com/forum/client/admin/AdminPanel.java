@@ -54,6 +54,7 @@ public class AdminPanel extends Canvas {
 	 * admin panel. If so, then show it. Otherwise, display a message.
 	 */
 	public AdminPanel() {
+		setBackgroundColor("#ffff00");
 		addChild(authorizing);
 		setHeight(400);
 		setWidth100();

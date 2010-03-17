@@ -67,6 +67,15 @@ public interface ForumService extends RemoteService {
 	TopicData[] getThreads(int categoryID);
 
 	/**
+	 * Gets the User with the associated ID.
+	 * 
+	 * @param id
+	 *            the user's ID
+	 * @return the User
+	 */
+	User getUser(int id);
+
+	/**
 	 * Gets the currently logged in User.
 	 * 
 	 * @param sid
@@ -95,6 +104,15 @@ public interface ForumService extends RemoteService {
 	 *         User has the Privileges
 	 */
 	int hasPrivileges(Privileges privilegeLevel, String sid);
+
+	/**
+	 * Checks if a User is logged in or not.
+	 * 
+	 * @param sid
+	 *            the session ID
+	 * @return
+	 */
+	boolean isLoggedIn(String sid);
 
 	/**
 	 * Logs in a User if username and password are correct. Make sure to use the
@@ -153,4 +171,12 @@ public interface ForumService extends RemoteService {
 	 */
 	boolean setUsers(User[] users, String sid);
 
+	/**
+	 * Checks if the username exists.
+	 * 
+	 * @param username
+	 *            the username to check
+	 * @return
+	 */
+	boolean usernameExists(String username);
 }

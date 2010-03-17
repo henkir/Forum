@@ -1,9 +1,6 @@
 package com.forum.client.admin;
 
 import com.forum.client.data.ForumServiceAsync;
-import com.forum.client.data.SessionHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -61,7 +58,6 @@ public class AuthorizedAdminPanel extends Canvas {
 	 */
 	private final IButton addCategory = new IButton("Add");
 
-	private final IButton logOut = new IButton("Log out");
 	/**
 	 * Spacer label for increasing distances.
 	 */
@@ -82,26 +78,6 @@ public class AuthorizedAdminPanel extends Canvas {
 	 * Initializes all the components.
 	 */
 	private void init() {
-		logOut.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				forumSvc.logOut(SessionHandler.getSessionId(),
-						new AsyncCallback<String>() {
-
-							@Override
-							public void onSuccess(String result) {
-								adminPanel.reload(result);
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								SC.say("Failure", "Failed to log out.");
-							}
-						});
-			}
-		});
-
 		users = new UserListGrid(forumSvc);
 		categories = new CategoryListGrid(forumSvc);
 		// Edit users
@@ -237,7 +213,6 @@ public class AuthorizedAdminPanel extends Canvas {
 		categoriesEditStack.addMember(spacerCategories);
 		categoriesEditStack.addMember(saveCategories);
 
-		layout.addMember(logOut);
 		layout.addMember(usersLayout);
 		layout.addMember(categoriesLayout);
 

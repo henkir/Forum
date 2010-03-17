@@ -71,10 +71,28 @@ public class Forum implements EntryPoint {
 
 			@Override
 			public void onSuccess(String result) {
-				waitWindow = new WaitWindow("Logging in");
-				waitWindow.draw();
-				SessionHandler.setSessionId(result);
-				updatePrivileges();
+				final String sid = result;
+				forumSvc.isLoggedIn(sid, new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.say("Failure", "There was a failure.");
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							waitWindow = new WaitWindow("Logging in");
+							waitWindow.draw();
+							SessionHandler.setSessionId(sid);
+							updatePrivileges();
+						} else {
+							SC.say("Wrong password",
+									"Username and password do not match.");
+						}
+					}
+				});
+
 			}
 
 			@Override
@@ -204,6 +222,8 @@ public class Forum implements EntryPoint {
 		topPanel = new HStack(5);
 		topPanel.addMember(logoutButton);
 		topPanel.addMember(forumButton);
+		topPanel.setHeight(logoutButton.getHeight());
+		topPanel.setBackgroundColor("#ffff00");
 		panel.addMember(topPanel);
 		panel.addMember(banner);
 		panel.addMember(new AdminPanel());
@@ -213,7 +233,6 @@ public class Forum implements EntryPoint {
 	private void showLoginWindow() {
 		LoginWindow window = new LoginWindow(forumSvc, loginCallback);
 		window.draw();
-		window.focus();
 	}
 
 	private void showRegisterWindow() {

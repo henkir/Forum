@@ -66,6 +66,15 @@ public interface ForumServiceAsync {
 	void getThreads(int categoryID, AsyncCallback<TopicData[]> callback);
 
 	/**
+	 * Gets the User with the associated ID.
+	 * 
+	 * @param id
+	 *            the user's ID
+	 * @return the User
+	 */
+	void getUser(int id, AsyncCallback<User> callback);
+
+	/**
 	 * Gets the currently logged in User.
 	 * 
 	 * @param sid
@@ -95,6 +104,15 @@ public interface ForumServiceAsync {
 	 */
 	void hasPrivileges(Privileges privilegeLevel, String sid,
 			AsyncCallback<Integer> callback);
+
+	/**
+	 * Checks if a User is logged in or not.
+	 * 
+	 * @param sid
+	 *            the session ID
+	 * @return
+	 */
+	void isLoggedIn(String sid, AsyncCallback<Boolean> callback);
 
 	/**
 	 * Logs in a User if username and password are correct. Make sure to use the
@@ -155,5 +173,14 @@ public interface ForumServiceAsync {
 	 * @return true if successful, otherwise false
 	 */
 	void setUsers(User[] users, String sid, AsyncCallback<Boolean> callback);
+
+	/**
+	 * Checks if the username exists.
+	 * 
+	 * @param username
+	 *            the username to check
+	 * @return
+	 */
+	void usernameExists(String username, AsyncCallback<Boolean> callback);
 
 }

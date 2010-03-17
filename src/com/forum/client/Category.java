@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
+import com.forum.client.data.SessionHandler;
 import com.forum.client.data.TopicData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -41,7 +42,7 @@ public class Category extends Canvas {
 		this.catid = id;
 		// title label
 		title = new Label("<div class='categoryTitle'>" + name
-				+ " TopiXX</div>");
+				+ " Topics</div>");
 		title.setTop(currentHeight);
 		title.setHeight(25);
 		title.setWidth(200);
@@ -75,7 +76,21 @@ public class Category extends Canvas {
 				}
 			}
 		});
-		addChild(addThreadButton);
+		forumSvc.isLoggedIn(SessionHandler.getSessionId(),
+				new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							addChild(addThreadButton);
+						}
+					}
+				});
 
 		getTopics();
 	}
