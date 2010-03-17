@@ -14,20 +14,46 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 
+/**
+ * A graphical representation of the list of topics in the forum
+ * 
+ * @author jonas
+ * 
+ */
 public class Category extends Canvas {
-
+	// service
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
+	// is the component hidden?
 	private boolean hidden = true;
+	// the name of the category
 	private String name = "";
+	// the label containing the title
 	private Label title;
+	// the parent that holds the component
 	private Canvas parent;
+	// labels of the topics
 	private ArrayList<Label> labels = new ArrayList<Label>();
+	// the IDs' of the topice
 	private ArrayList<Integer> topics = new ArrayList<Integer>();
+	// a button to add a thread
 	private IButton addThreadButton = new IButton("Add Topic");
+	// the ID of nthe categort
 	private int catid;
+	// keeps track of where to draw
 	private int currentHeight = 0;
+	// keeps track of the current showing thread
 	private ForumThread currentThread = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name
+	 *            Name of the category
+	 * @param id
+	 *            ID of the category
+	 * @param parent
+	 *            the canvas where the component shall be put
+	 */
 	public Category(String name, int id, final Canvas parent) {
 		super();
 
@@ -53,7 +79,7 @@ public class Category extends Canvas {
 				// TODO Auto-generated method stub
 				if (hidden) {
 					unhide();
-					killThread();
+					killTopic();
 				}
 			}
 		});
@@ -95,6 +121,12 @@ public class Category extends Canvas {
 		getTopics();
 	}
 
+	/**
+	 * Adds a topic to the category
+	 * 
+	 * @param topic
+	 *            The topic to be added
+	 */
 	public void addThread(final ForumThread topic) {
 		final Label label = new Label("<div class='category'>"
 				+ topic.getName() + "</div>");
@@ -118,14 +150,27 @@ public class Category extends Canvas {
 		addChild(label);
 	}
 
+	/**
+	 * Gets the name of the categoy
+	 * 
+	 * @return the name of the category
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets a reference to the categort a help for nested calsses
+	 * 
+	 * @return the category
+	 */
 	private Category getThis() {
 		return this;
 	}
 
+	/**
+	 * Gets the topics from the database thar belongs to the category
+	 */
 	private void getTopics() {
 		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
 
@@ -153,26 +198,41 @@ public class Category extends Canvas {
 		forumSvc.getThreads(catid, callback);
 	}
 
+	/**
+	 * Hides the component
+	 */
 	public void hide() {
 		animateRect(250, 0, 200, getHeight(), null, 1000);
 		for (Label l : labels)
 			l.setWidth(200);
 		// setVisible(false);
 		if (currentThread != null)
-			killThread();
+			killTopic();
 		hidden = true;
 	}
 
-	private void killThread() {
+	/**
+	 * Takes away the current topic
+	 */
+	private void killTopic() {
 		currentThread.kill();
 		currentThread = null;
 	}
 
+	/**
+	 * Sets the current topic
+	 * 
+	 * @param topic
+	 *            topic to be the current topic
+	 */
 	public void setTopic(ForumThread topic) {
 		topic.draw();
 		currentThread = topic;
 	}
 
+	/**
+	 * Unghides the component
+	 */
 	public void unhide() {
 
 		animateRect(500, 0, 600, getHeight(), null, 1000);

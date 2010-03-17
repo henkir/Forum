@@ -13,19 +13,37 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 
+/**
+ * A class that contains the categories of the forum it also extends Canvas to
+ * have a GUI for the categories
+ * 
+ * @author jonas+henke
+ * 
+ */
 public class CategoryList extends Canvas {
-
+	// the service
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
+	// a list of the categories labels
 	private ArrayList<Label> labels = new ArrayList<Label>();
+	// a label that shows the title 'Forum Caytegries"
 	private final Label title = new Label(
 			"<div class='categoryHeader'> Forum Categories </div>");
+	// keeps track wither the component is hidden or not
 	private boolean hidden = false;
+	// a reference to the parent where the component is to be located
 	private Canvas parent;
+	// keeps track of the current category
 	private Category currentCategory = null;
 
-	// kommer ihåg vart
+	// keeps track of the current height of internal components
 	private int currentHeight = 0;
 
+	/**
+	 * Constructor that only takes the parent as argument
+	 * 
+	 * @param parent
+	 *            Where the component will be
+	 */
 	public CategoryList(Canvas parent) {
 		super();
 		this.parent = parent;
@@ -58,6 +76,12 @@ public class CategoryList extends Canvas {
 
 	}
 
+	/**
+	 * Adds an category to the forum
+	 * 
+	 * @param category
+	 *            the new category
+	 */
 	public void addCategory(final Category category) {
 		final Label label = new Label("<div class='category'>"
 				+ category.getName() + "</div>");
@@ -85,6 +109,9 @@ public class CategoryList extends Canvas {
 		addChild(label);
 	}
 
+	/**
+	 * Gets the current categories of the forum
+	 */
 	private void getCategories() {
 		AsyncCallback<CategoryData[]> callback = new AsyncCallback<CategoryData[]>() {
 
@@ -107,6 +134,10 @@ public class CategoryList extends Canvas {
 		forumSvc.getCategories(callback);
 	}
 
+	/**
+	 * Hides the categoylist to the far left of the parent. The movement is
+	 * animated = super cool
+	 */
 	public void hide() {
 
 		animateRect(0, 0, 200, getHeight(), null, 1000);
@@ -115,12 +146,18 @@ public class CategoryList extends Canvas {
 		hidden = true;
 	}
 
+	/**
+	 * Removes the current category that is in foucus.
+	 */
 	public void killCategory() {
 		currentCategory.hide();
 		parent.removeChild(currentCategory);
 		currentCategory = null;
 	}
 
+	/**
+	 * Unhides the component and places it in focus.
+	 */
 	public void unhide() {
 		animateRect(500, 0, 600, getHeight(), null, 1000);
 		for (Label l : labels)
