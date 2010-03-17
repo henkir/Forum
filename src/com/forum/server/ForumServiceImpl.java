@@ -72,8 +72,8 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				String name = rs.getString("name");
-
-				result.add(new CategoryData(id, name));
+				String description = rs.getString("description");
+				result.add(new CategoryData(id, name, description));
 			}
 		} catch (SQLException e) {
 
@@ -161,11 +161,12 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 			int privileges = Privileges.getInteger(LoginHandler.getUser(sid)
 					.getPrivileges());
-			String query = "SELECT username, priv_level FROM users WHERE priv_level <= ?;";
+			String query = "SELECT username, priv_level FROM users WHERE priv_level <= ? AND username != ?;";
 			try {
 				PreparedStatement statement = connection
 						.getPreparedStatement(query);
 				statement.setInt(1, privileges);
+				statement.setString(2, LoginHandler.getUser(sid).getName());
 				ResultSet rs = statement.executeQuery();
 				ArrayList<User> users = new ArrayList<User>();
 				Privileges tempPrivs;
@@ -197,6 +198,11 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			return 1;
 		}
 		return 0;
+	}
+
+	@Override
+	public boolean isLoggedIn(String sid) {
+		return LoginHandler.isLoggedIn(sid);
 	}
 
 	@Override
@@ -352,12 +358,57 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean register(String username, String password) {
+		String existsQuery = "SELECT username FROM users WHERE username = ?";
 		String query = "INSERT INTO users(username, password) VALUES(?, SHA1(?));";
-		PreparedStatement statement = connection.getPreparedStatement(query);
+		PreparedStatement statement = connection
+				.getPreparedStatement(existsQuery);
 		try {
+			statement.setString(1, username);
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				return false;
+			}
+			statement = connection.getPreparedStatement(query);
 			statement.setString(1, username);
 			statement.setString(2, password);
 			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public User getUser(int id) {
+		String query = "SELECT username, priv_level FROM users WHERE id = ?";
+		PreparedStatement statement = connection.getPreparedStatement(query);
+		try {
+			statement.setInt(1, id);
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				String username = rs.getString("username");
+				Privileges privs = Privileges.getPrivilege(rs
+						.getInt("priv_level"));
+				User user = new User(id, username, privs);
+				return user;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean usernameExists(String username) {
+		String existsQuery = "SELECT username FROM users WHERE username = ?";
+		PreparedStatement statement = connection
+				.getPreparedStatement(existsQuery);
+		try {
+			statement.setString(1, username);
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				return false;
+			}
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
