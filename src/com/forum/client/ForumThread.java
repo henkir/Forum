@@ -134,8 +134,7 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onSuccess(Integer result) {
-				rtEditor.setValue("");
-				getPost();
+				redraw();
 			}
 		};
 		forumSvc.getUser(SessionHandler.getSessionId(),
@@ -156,6 +155,25 @@ public class ForumThread implements Serializable {
 
 	}
 
+	public void redraw() {
+
+		getPost();
+		Timer timer = new Timer(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+			
+				draw();
+				
+			}
+			
+		};
+		timer.schedule(500);
+		
+		
+	}
+
 	/**
 	 * Draws the component
 	 */
@@ -166,7 +184,6 @@ public class ForumThread implements Serializable {
 		parent.addChild(head);
 		head.setVisible(true);
 		for (Post p : posts) {
-			System.out.println("hellu");
 			p.setTop(currentHeight);
 			if (p.getHeight() != null)
 				currentHeight += p.getHeight() + 10;
@@ -229,7 +246,6 @@ public class ForumThread implements Serializable {
 						postID.add(result[i].getId());
 					}
 				}
-				//currentHeight = 0;
 				
 
 			}
@@ -280,12 +296,12 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!rtEditor.getValue().equals("")) {
+				if (!rtEditor.getValue().equals("<br>")) {
 					addPost(rtEditor.getValue());
 					rtEditor.setValue("");
-					currentHeight = 0;
-					draw();
-				}else{
+					///currentHeight = 0;
+					//redraw();
+				} else {
 					SC.say("Post cannot be empty");
 				}
 			}
