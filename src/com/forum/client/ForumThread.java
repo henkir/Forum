@@ -18,6 +18,7 @@ import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.VStack;
+import com.google.gwt.user.client.Timer;
 
 /**
  * A structure for a topic in the forum
@@ -133,11 +134,7 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onSuccess(Integer result) {
-				getPost();
-
-				currentHeight = 0;
-				draw();
-				rtEditor.setValue("");
+				redraw();
 			}
 		};
 		forumSvc.getUser(SessionHandler.getSessionId(),
@@ -149,13 +146,32 @@ public class ForumThread implements Serializable {
 					}
 
 					@Override
-					public void onSuccess(User result) {
+					public void onSuccess(final User result) {
 						int userId = result.getId();
-						System.out.println(userId);
 						forumSvc.addPost(post, id, userId, callback);
+
 					}
 				});
 
+	}
+
+	public void redraw() {
+
+		getPost();
+		Timer timer = new Timer(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+			
+				draw();
+				
+			}
+			
+		};
+		timer.schedule(500);
+		
+		
 	}
 
 	/**
@@ -169,7 +185,10 @@ public class ForumThread implements Serializable {
 		head.setVisible(true);
 		for (Post p : posts) {
 			p.setTop(currentHeight);
-			currentHeight += p.getHeight() + 10;
+			if (p.getHeight() != null)
+				currentHeight += p.getHeight() + 10;
+			else
+				currentHeight += 210;
 			p.setLeft(500);
 			parent.addChild(p);
 			p.setVisible(true);
@@ -192,7 +211,7 @@ public class ForumThread implements Serializable {
 						}
 					}
 				});
-
+		currentHeight = 0;
 	}
 
 	/**
@@ -227,6 +246,7 @@ public class ForumThread implements Serializable {
 						postID.add(result[i].getId());
 					}
 				}
+				
 
 			}
 		};
@@ -276,8 +296,14 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				addPost(rtEditor.getValue());
-				rtEditor.setValue("");
+				if (!rtEditor.getValue().equals("<br>")) {
+					addPost(rtEditor.getValue());
+					rtEditor.setValue("");
+					///currentHeight = 0;
+					//redraw();
+				} else {
+					SC.say("Post cannot be empty");
+				}
 			}
 		});
 		tailLayout.addMember(submitButton);
@@ -288,7 +314,7 @@ public class ForumThread implements Serializable {
 	}
 
 	/**
-	 * Removes the tipic
+	 * Removes the topic
 	 */
 	public void kill() {
 		currentHeight = 0;
