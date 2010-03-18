@@ -13,24 +13,25 @@ import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VStack;
+
 /**
  * Component for showing a post
+ * 
  * @author jonas
- *
+ * 
  */
 public class Post extends Canvas implements Serializable {
 
-	
 	private static final long serialVersionUID = -4293489942482413197L;
-	//layout
+	// layout
 	private HStack layout = new HStack();
-	//Text of the post
+	// Text of the post
 	private String text;
-	//Image of the user avatar
+	// Image of the user avatar
 	private Img avatar = new Img("mr_unknown.png");
-	//the display of the posts text
+	// the display of the posts text
 	private HTMLFlow textDisplay = new HTMLFlow("");
-	//post id
+	// post id
 	private long id;
 	private int threadID;
 	private int authorID;
@@ -39,14 +40,21 @@ public class Post extends Canvas implements Serializable {
 	private String userName;
 	private VStack avatarLayout = new VStack();
 	private Label nameLabel;
-/**
- * Constructor taking all the values from the database
- * @param id		Post ID
- * @param thID		Topics ID
- * @param auID		Authors ID
- * @param date		Date posted
- * @param text		Text of the post
- */
+
+	/**
+	 * Constructor taking all the values from the database
+	 * 
+	 * @param id
+	 *            Post ID
+	 * @param thID
+	 *            Topics ID
+	 * @param auID
+	 *            Authors ID
+	 * @param date
+	 *            Date posted
+	 * @param text
+	 *            Text of the post
+	 */
 	public Post(long id, int thID, int auID, String date, String text) {
 		super();
 		this.text = text;
@@ -77,9 +85,10 @@ public class Post extends Canvas implements Serializable {
 		forumSvc.getUser(authorID, callback);
 
 	}
-/**
- * Initializes the component
- */
+
+	/**
+	 * Initializes the component
+	 */
 	private void init() {
 
 		setCanDragReposition(false);
@@ -104,8 +113,7 @@ public class Post extends Canvas implements Serializable {
 		layout.addMember(avatarLayout);
 		addChild(layout);
 		// html part
-		textDisplay.setContents("<p>" + text
-				+ " </p>");
+		textDisplay.setContents("<p>" + text + " </p>");
 		layout.addMember(textDisplay);
 	}
 
