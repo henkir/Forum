@@ -16,19 +16,43 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VStack;
 
+/**
+ * A component for adding topics
+ * 
+ * @author jonas
+ * 
+ */
 public class AddTopicPanel extends Canvas {
-
+	// service
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
+	// layout of component
 	private VStack layout = new VStack();
+	// editor for the initial post
 	private RichTextEditor rtEditor;
+	// layout for topicfield
 	private HStack topicField = new HStack();
+	// label for heading
 	private Label title = new Label(
 			"<div class='threadTitle'>Create new Topic </div>");
+	// A dynamic form for setting the topic name
 	private DynamicForm form = new DynamicForm();
+	// button for submitting the new post
 	private IButton submitButton = new IButton("Submit Topic");
+	// Category ID
 	private int catID;
+	// Reference to the parent and the category
 	private Canvas parent, cat;
 
+	/**
+	 * Constructor for the component
+	 * 
+	 * @param catID
+	 *            ID of the category
+	 * @param parent
+	 *            Parent where the component will lie
+	 * @param cat
+	 *            The category component
+	 */
 	public AddTopicPanel(final int catID, final Canvas parent,
 			final Category cat) {
 		// instance
@@ -131,6 +155,11 @@ public class AddTopicPanel extends Canvas {
 		parent.addChild(this);
 	}
 
+	/**
+	 * Help for nested classes
+	 * 
+	 * @return The component
+	 */
 	private Canvas getThis() {
 		return this;
 	}

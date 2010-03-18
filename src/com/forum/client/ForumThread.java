@@ -7,8 +7,10 @@ import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.PostData;
 import com.forum.client.data.SessionHandler;
+import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -17,25 +19,61 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.VStack;
 
+/**
+ * A structure for a topic in the forum
+ * 
+ * @author jonas
+ * 
+ */
 public class ForumThread implements Serializable {
-
+	// service instance
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
 	private static final long serialVersionUID = 1L;
+	// name of the topic
 	private String name;
+	// parent that holds the components
 	private Canvas parent;
+	// the heading and the component for adding posts
 	private Canvas head, tail;
+	// the layout for the add post component
 	private VStack tailLayout;
+	// the text editor for add post component
 	private RichTextEditor rtEditor;
+	// button for submitting post
 	private IButton submitButton;
+	// label for heading
 	private Label title;
+	// posts of the topic
 	private ArrayList<Post> posts = new ArrayList<Post>();
+	// keeps track of where to put the next component
 	private int currentHeight = 0;
+	// ID of the topic
 	private int id;
+	// ID of the category the topic belongs to
 	private int categoryID;
+	// the author of the topic
 	private int authorID;
+	// the date the topic was created
 	private String date;
+	// IDs of the posts
 	private ArrayList<Long> postID = new ArrayList<Long>();
 
+	/**
+	 * Constructor taking all the info from the database
+	 * 
+	 * @param id
+	 *            Topic ID
+	 * @param catID
+	 *            Category ID
+	 * @param auID
+	 *            Authors ID
+	 * @param name
+	 *            Topics name
+	 * @param date
+	 *            Date of creation
+	 * @param parent
+	 *            Where the component will lie
+	 */
 	public ForumThread(int id, int catID, int auID, String name, String date,
 			Canvas parent) {
 		this.id = id;
@@ -47,6 +85,25 @@ public class ForumThread implements Serializable {
 		initThread();
 	}
 
+	/**
+	 * Costructor that takes all the info from the database plus the initial
+	 * posts text
+	 * 
+	 * @param id
+	 *            Topic ID
+	 * @param catID
+	 *            Category ID
+	 * @param auID
+	 *            Author ID
+	 * @param name
+	 *            Topic name
+	 * @param date
+	 *            Date of creation
+	 * @param parent
+	 *            Where the component will lie
+	 * @param initPost
+	 *            The text of the initial post
+	 */
 	public ForumThread(int id, int catID, int auID, String name, String date,
 			Canvas parent, String initPost) {
 		this.id = id;
@@ -59,15 +116,14 @@ public class ForumThread implements Serializable {
 		initThread();
 	}
 
-	public ForumThread(final String name, Canvas parent) {
-		this.name = name;
-		this.parent = parent;
-		initThread();
-
-	}
-
-	private void addPost(String post) {
-		AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+	/**
+	 * Adds a post to the topic
+	 * 
+	 * @param post
+	 *            The text of the post to be added
+	 */
+	private void addPost(final String post) {
+		final AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -78,15 +134,33 @@ public class ForumThread implements Serializable {
 			@Override
 			public void onSuccess(Integer result) {
 				getPost();
+
 				currentHeight = 0;
 				draw();
 				rtEditor.setValue("");
 			}
 		};
-		forumSvc.addPost(post, id, authorID, callback);
+		forumSvc.getUser(SessionHandler.getSessionId(),
+				new AsyncCallback<User>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.say("Failure", "There was a failure.");
+					}
+
+					@Override
+					public void onSuccess(User result) {
+						int userId = result.getId();
+						System.out.println(userId);
+						forumSvc.addPost(post, id, userId, callback);
+					}
+				});
 
 	}
 
+	/**
+	 * Draws the component
+	 */
 	public void draw() {
 
 		head.setLeft(500);
@@ -121,10 +195,18 @@ public class ForumThread implements Serializable {
 
 	}
 
+	/**
+	 * Gets the name of the topic
+	 * 
+	 * @return Topic name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets the posts belonging to the topic
+	 */
 	private void getPost() {
 		AsyncCallback<PostData[]> callback = new AsyncCallback<PostData[]>() {
 
@@ -151,6 +233,9 @@ public class ForumThread implements Serializable {
 		forumSvc.getPosts(id, callback);
 	}
 
+	/**
+	 * Initializes all the components of the topic
+	 */
 	private void initThread() {
 		// headsection
 		head = new Canvas();
@@ -202,6 +287,9 @@ public class ForumThread implements Serializable {
 
 	}
 
+	/**
+	 * Removes the tipic
+	 */
 	public void kill() {
 		currentHeight = 0;
 		parent.removeChild(head);
