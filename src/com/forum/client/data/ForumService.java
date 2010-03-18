@@ -33,6 +33,17 @@ public interface ForumService extends RemoteService {
 	int addThread(String name, int catID, int authID);
 
 	/**
+	 * Updates an existing post.
+	 * 
+	 * @param id
+	 *            the ID of the post
+	 * @param text
+	 *            the new contents
+	 * @return true if successful, otherwise false
+	 */
+	boolean updatePost(long id, String text);
+
+	/**
 	 * Gets all Categories.
 	 * 
 	 * @return the Categories
@@ -146,6 +157,15 @@ public interface ForumService extends RemoteService {
 	 * @return true if successful, otherwise false
 	 */
 	boolean register(String username, String password);
+
+	/**
+	 * Removes a Post with a certain ID.
+	 * 
+	 * @param id
+	 *            the ID of the post
+	 * @return true if successful, otherwise false
+	 */
+	boolean removePost(long id);
 
 	/**
 	 * Sets the Categories in the database to match those of the array, if the

@@ -380,6 +380,20 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public boolean removePost(long id) {
+		String query = "DELETE FROM posts WHERE id = ?";
+		PreparedStatement statement = connection.getPreparedStatement(query);
+		try {
+			statement.setLong(1, id);
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
 	public User getUser(int id) {
 		String query = "SELECT username, priv_level FROM users WHERE id = ?";
 		PreparedStatement statement = connection.getPreparedStatement(query);
@@ -409,6 +423,21 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			if (rs.next()) {
 				return false;
 			}
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updatePost(long id, String text) {
+		String query = "UPDATE posts SET post = ? WHERE id = ?";
+		PreparedStatement statement = connection.getPreparedStatement(query);
+		try {
+			statement.setString(1, text);
+			statement.setLong(2, id);
+			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();

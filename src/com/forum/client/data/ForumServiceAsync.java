@@ -32,6 +32,17 @@ public interface ForumServiceAsync {
 			AsyncCallback<Integer> callback);
 
 	/**
+	 * Updates an existing post.
+	 * 
+	 * @param id
+	 *            the ID of the post
+	 * @param text
+	 *            the new contents
+	 * @return true if successful, otherwise false
+	 */
+	void updatePost(long id, String text, AsyncCallback<Boolean> callback);
+
+	/**
 	 * Gets all Categories.
 	 * 
 	 * @return the Categories
@@ -148,6 +159,15 @@ public interface ForumServiceAsync {
 	 */
 	void register(String username, String password,
 			AsyncCallback<Boolean> callback);
+
+	/**
+	 * Removes a Post with a certain ID.
+	 * 
+	 * @param id
+	 *            the ID of the post
+	 * @return true if successful, otherwise false
+	 */
+	void removePost(long id, AsyncCallback<Boolean> callback);
 
 	/**
 	 * Sets the Categories in the database to match those of the array, if the
