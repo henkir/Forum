@@ -9,6 +9,7 @@ import com.forum.client.data.PostData;
 import com.forum.client.data.SessionHandler;
 import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -18,7 +19,6 @@ import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.VStack;
-import com.google.gwt.user.client.Timer;
 
 /**
  * A structure for a topic in the forum
@@ -156,22 +156,22 @@ public class ForumThread implements Serializable {
 	}
 
 	public void redraw() {
-
+		postID.clear();
+		posts.clear();
 		getPost();
-		Timer timer = new Timer(){
+		Timer timer = new Timer() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-			
+
 				draw();
-				
+
 			}
-			
+
 		};
 		timer.schedule(500);
-		
-		
+
 	}
 
 	/**
@@ -236,21 +236,40 @@ public class ForumThread implements Serializable {
 
 			@Override
 			public void onSuccess(PostData[] result) {
+				boolean remove;
+
+				for (int i = 0; i < postID.size(); i++) {
+					remove = true;
+					for (int j = 0; j < result.length; j++) {
+						if (postID.get(i) == result[i].getId()) {
+							remove = false;
+							break;
+						}
+						if (remove) {
+							postID.remove(i);
+							posts.remove(i);
+						}
+					}
+				}
 
 				for (int i = 0; i < result.length; i++) {
 
 					if (!postID.contains(result[i].getId())) {
 						posts.add(new Post(result[i].getId(), result[i]
 								.getTopicID(), result[i].getAuthorID(),
-								result[i].getDate(), result[i].getText()));
+								result[i].getDate(), result[i].getText(),
+								getInstance()));
 						postID.add(result[i].getId());
 					}
 				}
-				
 
 			}
 		};
 		forumSvc.getPosts(id, callback);
+	}
+
+	private ForumThread getInstance() {
+		return this;
 	}
 
 	/**
@@ -299,8 +318,8 @@ public class ForumThread implements Serializable {
 				if (!rtEditor.getValue().equals("<br>")) {
 					addPost(rtEditor.getValue());
 					rtEditor.setValue("");
-					///currentHeight = 0;
-					//redraw();
+					// /currentHeight = 0;
+					// redraw();
 				} else {
 					SC.say("Post cannot be empty");
 				}

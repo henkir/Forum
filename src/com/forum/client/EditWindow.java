@@ -33,7 +33,7 @@ public class EditWindow extends Window {
 		setTitle("Edit post");
 		rtEditor.setWidth(530);
 		rtEditor.setHeight(150);
-		rtEditor.setContents(postText);
+		rtEditor.setValue(text);
 		addItem(rtEditor);
 		buttonLayout.addMember(cancel);
 		buttonLayout.addMember(save);
@@ -54,20 +54,22 @@ public class EditWindow extends Window {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				forumSvc.updatePost(id, text, new AsyncCallback<Boolean>() {
+				forumSvc.updatePost(id, rtEditor.getValue(),
+						new AsyncCallback<Boolean>() {
 
-					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
-							// topic.redraw();
-						}
-					}
+							@Override
+							public void onSuccess(Boolean result) {
+								if (result) {
+									hide();
+									topic.redraw();
+								}
+							}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.say("Failure", "There was a failure.");
-					}
-				});
+							@Override
+							public void onFailure(Throwable caught) {
+								SC.say("Failure", "There was a failure.");
+							}
+						});
 			}
 		});
 	}

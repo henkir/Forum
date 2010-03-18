@@ -9,6 +9,7 @@ import com.forum.client.data.SessionHandler;
 import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;
@@ -65,7 +66,8 @@ public class Post extends Canvas implements Serializable {
 	 * @param text
 	 *            Text of the post
 	 */
-	public Post(long id, int thID, int auID, String date, String text) {
+	public Post(long id, int thID, int auID, String date, String text,
+			ForumThread topic) {
 		super();
 		this.text = text;
 		this.authorID = auID;
@@ -140,20 +142,35 @@ public class Post extends Canvas implements Serializable {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				forumSvc.removePost(id, new AsyncCallback<Boolean>() {
+				SC.ask("Remove", "Do you want to remove this post?",
+						new BooleanCallback() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.say("Failure", "There was a failure.");
-					}
+							@Override
+							public void execute(Boolean value) {
+								if (value) {
+									forumSvc.removePost(id,
+											new AsyncCallback<Boolean>() {
 
-					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
-							// topic.redraw();
-						}
-					}
-				});
+												@Override
+												public void onFailure(
+														Throwable caught) {
+													SC
+															.say("Failure",
+																	"There was a failure.");
+												}
+
+												@Override
+												public void onSuccess(
+														Boolean result) {
+													if (result) {
+														topic.redraw();
+													}
+												}
+											});
+								}
+							}
+						});
+
 			}
 		});
 
