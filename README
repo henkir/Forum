@@ -1,0 +1,7 @@
+Forum Project created by Jonas Hesselryd (jonhe442) and Henrik Holmberg (henho106).
+
+You must _TURN OFF_ Google AppEngine in order to get the database connection to work.
+
+To create the database on a MySQL server where you have privileges to create a new database, simply use "source path/to/database.sql". The file is located in Forum/other.
+This creates the database and populates it with example data. Three users are created, admin, moder and test (passwords is the same as usernames).
+A user in MySQL is created, forum_user which logs in with forum_pass.

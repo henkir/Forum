@@ -2,7 +2,12 @@ package com.forum.client.data;
 
 import java.io.Serializable;
 
-
+/**
+ * A class for storing information about a user.
+ * 
+ * @author henrik
+ * 
+ */
 public class User implements Serializable {
 
 	/**
@@ -16,20 +21,53 @@ public class User implements Serializable {
 	private Privileges privileges = Privileges.MEMBER;
 
 	private boolean changed = false;
+
+	/**
+	 * Creates a new User.
+	 */
 	public User() {
 
 	}
+
+	/**
+	 * Creates a new User.
+	 * 
+	 * @param id
+	 *            the ID of the user
+	 * @param name
+	 *            the name of the user
+	 * @param privileges
+	 *            the Privileges of the user
+	 */
 	public User(int id, String name, Privileges privileges) {
 		this.name = name;
 		this.privileges = privileges;
 		this.id = id;
 	}
 
+	/**
+	 * Creates a new User.
+	 * 
+	 * @param name
+	 *            the name of the user
+	 * @param privileges
+	 *            the Privileges of the user
+	 */
 	public User(String name, Privileges privileges) {
 		this.name = name;
 		this.privileges = privileges;
 	}
 
+	/**
+	 * Creates a new User.
+	 * 
+	 * @param name
+	 *            the name of the user
+	 * @param privileges
+	 *            the Privileges of the user
+	 * @param changed
+	 *            if the user has changed
+	 */
 	public User(String name, Privileges privileges, boolean changed) {
 		this.name = name;
 		this.privileges = privileges;

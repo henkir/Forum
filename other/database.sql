@@ -39,9 +39,9 @@ CREATE TABLE posts (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 
 
 -- Create a new user for the forum. Comment out the next two lines if the user is already created.
--- CREATE USER 'forum_user';
--- SET PASSWORD FOR 'forum_user' = PASSWORD('forum_pass');
--- GRANT SELECT, INSERT, UPDATE, DELETE ON forum.* TO 'forum_user';
+CREATE USER 'forum_user';
+SET PASSWORD FOR 'forum_user' = PASSWORD('forum_pass');
+GRANT SELECT, INSERT, UPDATE, DELETE ON forum.* TO 'forum_user';
 
 
 
