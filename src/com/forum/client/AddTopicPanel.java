@@ -2,6 +2,8 @@ package com.forum.client;
 
 import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
+import com.forum.client.data.SessionHandler;
+import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -119,22 +121,38 @@ public class AddTopicPanel extends Canvas {
 						@Override
 						public void onSuccess(Integer result) {
 							// TODO : add initial post
+							
 							final int topicID = result;
-							forumSvc.addPost(text, result, catID,
-									new AsyncCallback<Integer>() {
+							forumSvc.getUser(SessionHandler.getSessionId(),
+									new AsyncCallback<User>() {
 
 										@Override
 										public void onFailure(Throwable caught) {
-
+											SC.say("Failure", "There was a failure.");
 										}
 
 										@Override
-										public void onSuccess(Integer result) {
+										public void onSuccess(final User result) {
+											int userId = result.getId();
+											forumSvc.addPost(text, topicID, userId,
+													new AsyncCallback<Integer>() {
 
-											cat.setTopic(topicID);
+														@Override
+														public void onFailure(Throwable caught) {
+
+														}
+
+														@Override
+														public void onSuccess(Integer result) {
+
+															cat.setTopic(topicID);
+
+														}
+													});
 
 										}
 									});
+							
 							parent.removeChild(getThis());
 
 						}
