@@ -55,6 +55,15 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 			statement.setInt(2, authID);
 			statement.setString(3, name);
 			statement.executeUpdate();
+			String selectQuery = "SELECT id FROM topics WHERE category_id = ? AND author_id = ? AND name = ? AND time_created < (NOW() + 1);";
+			statement = connection.getPreparedStatement(selectQuery);
+			statement.setInt(1, catID);
+			statement.setInt(2, authID);
+			statement.setString(3, name);
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("id");
+			}
 		} catch (SQLException e) {
 
 		}
