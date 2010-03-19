@@ -26,7 +26,7 @@ import com.smartgwt.client.widgets.layout.VStack;
  * @author jonas
  * 
  */
-public class ForumThread implements Serializable {
+public class ForumTopic implements Serializable {
 	// service instance
 	private ForumServiceAsync forumSvc = GWT.create(ForumService.class);
 	private static final long serialVersionUID = 1L;
@@ -75,7 +75,7 @@ public class ForumThread implements Serializable {
 	 * @param parent
 	 *            Where the component will lie
 	 */
-	public ForumThread(int id, int catID, int auID, String name, String date,
+	public ForumTopic(int id, int catID, int auID, String name, String date,
 			Canvas parent) {
 		this.id = id;
 		this.categoryID = catID;
@@ -105,7 +105,7 @@ public class ForumThread implements Serializable {
 	 * @param initPost
 	 *            The text of the initial post
 	 */
-	public ForumThread(int id, int catID, int auID, String name, String date,
+	public ForumTopic(int id, int catID, int auID, String name, String date,
 			Canvas parent, String initPost) {
 		this.id = id;
 		this.categoryID = catID;
@@ -156,6 +156,9 @@ public class ForumThread implements Serializable {
 	}
 
 	public void redraw() {
+		for (int i = 0; i < posts.size(); i++) {
+			parent.removeChild(posts.get(i));
+		}
 		postID.clear();
 		posts.clear();
 		getPost();
@@ -225,12 +228,13 @@ public class ForumThread implements Serializable {
 
 	/**
 	 * Gets topic ID
-	 * @return	topic ID
+	 * 
+	 * @return topic ID
 	 */
-	public int getID(){
+	public int getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Gets the posts belonging to the topic
 	 */
@@ -276,7 +280,7 @@ public class ForumThread implements Serializable {
 		forumSvc.getPosts(id, callback);
 	}
 
-	private ForumThread getInstance() {
+	private ForumTopic getInstance() {
 		return this;
 	}
 
