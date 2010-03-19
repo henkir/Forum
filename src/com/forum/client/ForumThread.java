@@ -224,6 +224,14 @@ public class ForumThread implements Serializable {
 	}
 
 	/**
+	 * Gets topic ID
+	 * @return	topic ID
+	 */
+	public int getID(){
+		return id;
+	}
+	
+	/**
 	 * Gets the posts belonging to the topic
 	 */
 	private void getPost() {

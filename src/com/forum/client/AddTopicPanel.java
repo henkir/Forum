@@ -3,6 +3,7 @@ package com.forum.client;
 import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -97,8 +98,7 @@ public class AddTopicPanel extends Canvas {
 			@Override
 			public void onClick(ClickEvent event) {
 				String topicName = form.getValue("textField").toString();
-				String text = rtEditor.getValue();
-				System.out.println(text);
+				final String text = rtEditor.getValue();
 				if (topicName.equals("")) {
 					SC.say("Topic name cannot be empty");
 					form.setValue("textField", "");
@@ -119,8 +119,23 @@ public class AddTopicPanel extends Canvas {
 						@Override
 						public void onSuccess(Integer result) {
 							// TODO : add initial post
+							final int topicID = result;
+							forumSvc.addPost(text, result, catID,
+									new AsyncCallback<Integer>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+
+										}
+
+										@Override
+										public void onSuccess(Integer result) {
+
+											cat.setTopic(topicID);
+
+										}
+									});
 							parent.removeChild(getThis());
-							cat.unhide();
 
 						}
 

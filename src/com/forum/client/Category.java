@@ -7,6 +7,7 @@ import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.SessionHandler;
 import com.forum.client.data.TopicData;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -34,7 +35,9 @@ public class Category extends Canvas {
 	// labels of the topics
 	private ArrayList<Label> labels = new ArrayList<Label>();
 	// the IDs' of the topice
-	private ArrayList<Integer> topics = new ArrayList<Integer>();
+	private ArrayList<ForumThread> topics = new ArrayList<ForumThread>();
+	// list of ids
+	private ArrayList<Integer> topicIds = new ArrayList<Integer>();
 	// a button to add a thread
 	private IButton addThreadButton = new IButton("Add Topic");
 	// the ID of nthe categort
@@ -130,8 +133,9 @@ public class Category extends Canvas {
 	public void addThread(final ForumThread topic) {
 		final Label label = new Label("<div class='category'>"
 				+ topic.getName() + "</div>");
+		topics.add(topic);
 		label.addClickHandler(new ClickHandler() {
-			// fixa lite här
+
 			@Override
 			public void onClick(ClickEvent event) {
 				if (currentThread != topic) {
@@ -141,6 +145,7 @@ public class Category extends Canvas {
 				}
 			}
 		});
+
 		labels.add(label);
 		label.setHeight(30);
 		label.setWidth(getWidth());
@@ -169,7 +174,7 @@ public class Category extends Canvas {
 	}
 
 	/**
-	 * Gets the topics from the database thar belongs to the category
+	 * Gets the topics from the database that belongs to the category
 	 */
 	private void getTopics() {
 		AsyncCallback<TopicData[]> callback = new AsyncCallback<TopicData[]>() {
@@ -184,12 +189,12 @@ public class Category extends Canvas {
 			public void onSuccess(TopicData[] result) {
 				for (int i = 0; i < result.length; i++) {
 
-					if (!topics.contains(result[i].getId())) {
+					if (!topicIds.contains(result[i].getId())) {
 						addThread(new ForumThread(result[i].getId(), result[i]
 								.getCategoryID(), result[i].getAuthorID(),
 								result[i].getName(), result[i].getDate(),
 								parent));
-						topics.add(result[i].getId());
+						topicIds.add(result[i].getId());
 					}
 				}
 
@@ -205,7 +210,6 @@ public class Category extends Canvas {
 		animateRect(250, 0, 200, getHeight(), null, 1000);
 		for (Label l : labels)
 			l.setWidth(200);
-		// setVisible(false);
 		if (currentThread != null)
 			killTopic();
 		hidden = true;
@@ -225,9 +229,40 @@ public class Category extends Canvas {
 	 * @param topic
 	 *            topic to be the current topic
 	 */
-	public void setTopic(ForumThread topic) {
-		topic.draw();
-		currentThread = topic;
+	public void setTopic(final int topicID) {
+
+		Timer timer = new Timer() {
+
+			@Override
+			public void run() {
+
+				getTopics();
+
+				Timer timer2 = new Timer() {
+
+					@Override
+					public void run() {
+						ForumThread topic = null;
+						for (ForumThread t : topics) {
+							if (t.getID() == topicID) {
+								topic = t;
+								break;
+							}
+						}
+						if (topic != null) {
+							topic.draw();
+							currentThread = topic;
+						}
+					}
+
+				};
+				timer2.schedule(500);
+			}
+
+		};
+
+		timer.schedule(500);
+
 	}
 
 	/**
