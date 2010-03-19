@@ -13,6 +13,12 @@ import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.layout.VStack;
 
+/**
+ * Shows the admin panel, it assumes that the user is authorized.
+ * 
+ * @author henrik
+ * 
+ */
 public class AuthorizedAdminPanel extends Canvas {
 
 	/**
@@ -67,6 +73,14 @@ public class AuthorizedAdminPanel extends Canvas {
 	 */
 	private Label spacerCategories = new Label();
 
+	/**
+	 * Creates a new AuthorizedAdminPanel.
+	 * 
+	 * @param adminPanel
+	 *            the admin panel
+	 * @param forumService
+	 *            for AsyncCallbacks
+	 */
 	public AuthorizedAdminPanel(AdminPanel adminPanel,
 			ForumServiceAsync forumService) {
 		this.adminPanel = adminPanel;

@@ -58,7 +58,6 @@ public class Forum implements EntryPoint {
 	IButton forumButton = new IButton("Forum panel");
 	IButton logoutButton = new IButton("Log out");
 	Privileges currentPrivs = null;
-	WaitWindow waitWindow;
 
 	AsyncCallback<String> loginCallback;
 	AsyncCallback<Boolean> registerCallback;
@@ -82,8 +81,6 @@ public class Forum implements EntryPoint {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							waitWindow = new WaitWindow("Logging in");
-							waitWindow.draw();
 							SessionHandler.setSessionId(sid);
 							updatePrivileges();
 						} else {
@@ -126,6 +123,9 @@ public class Forum implements EntryPoint {
 
 	}
 
+	/**
+	 * Gets the privileges of the current user.
+	 */
 	private void updatePrivileges() {
 		forumSvc.hasPrivileges(Privileges.MODERATOR, SessionHandler
 				.getSessionId(), new AsyncCallback<Integer>() {
@@ -144,17 +144,15 @@ public class Forum implements EntryPoint {
 				} else {
 					currentPrivs = null;
 				}
-				if (waitWindow != null) {
-					waitWindow.hide();
-				}
 				showForumPanel();
 			}
 		});
 	}
 
+	/**
+	 * Logs out the current user.
+	 */
 	private void logout() {
-		waitWindow = new WaitWindow("Logging out");
-		waitWindow.show();
 		forumSvc.logOut(SessionHandler.getSessionId(),
 				new AsyncCallback<String>() {
 
@@ -171,6 +169,9 @@ public class Forum implements EntryPoint {
 				});
 	}
 
+	/**
+	 * Shows the forum.
+	 */
 	private void showForumPanel() {
 		panel.destroy();
 		catList = new CategoryList(forumCanvas);
@@ -213,6 +214,9 @@ public class Forum implements EntryPoint {
 		panel.draw();
 	}
 
+	/**
+	 * Shows the admin panel.
+	 */
 	private void showAdminPanel() {
 		panel.destroy();
 		forumButton = new IButton("Forum panel");
@@ -230,11 +234,17 @@ public class Forum implements EntryPoint {
 		panel.draw();
 	}
 
+	/**
+	 * Shows the login window.
+	 */
 	private void showLoginWindow() {
 		LoginWindow window = new LoginWindow(forumSvc, loginCallback);
 		window.draw();
 	}
 
+	/**
+	 * Shows the register window.
+	 */
 	private void showRegisterWindow() {
 		RegisterWindow window = new RegisterWindow(forumSvc, registerCallback);
 		window.draw();

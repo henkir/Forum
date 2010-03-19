@@ -14,12 +14,24 @@ import com.forum.client.data.TopicData;
 import com.forum.client.data.User;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * The server end of the AsyncCallbacks.
+ * 
+ * @author henrik
+ * 
+ */
 public class ForumServiceImpl extends RemoteServiceServlet implements
 		ForumService {
 
 	private static final long serialVersionUID = 3531226764827229641L;
+	/**
+	 * The connection to the database.
+	 */
 	private DatabaseConnection connection = null;
 
+	/**
+	 * Creates a new ForumServiceImpl.
+	 */
 	public ForumServiceImpl() {
 
 		connection = new DatabaseConnection(true);

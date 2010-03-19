@@ -10,6 +10,12 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.HStack;
 
+/**
+ * A Window containing an editor for editing a post.
+ * 
+ * @author henrik
+ * 
+ */
 public class EditWindow extends Window {
 
 	private ForumServiceAsync forumSvc;
@@ -21,26 +27,42 @@ public class EditWindow extends Window {
 	private String text;
 	private ForumThread topic;
 
+	/**
+	 * Creates a new Window that is centered in the page.
+	 * 
+	 * @param postId
+	 *            the ID of the Post
+	 * @param postText
+	 *            the text of the Post
+	 * @param postTopic
+	 *            the Topic that the Post is in
+	 * @param forumService
+	 *            for making AsyncCallbacks
+	 */
 	public EditWindow(long postId, String postText, ForumThread postTopic,
 			ForumServiceAsync forumService) {
 		this.id = postId;
 		this.text = postText;
 		this.topic = postTopic;
 		this.forumSvc = forumService;
+		// Set properties
 		setMembersMargin(3);
 		setIsModal(true);
 		setShowModalMask(true);
 		setTitle("Edit post");
+		setWidth(550);
+		setHeight(210);
+		centerInPage();
+
+		// Editor
 		rtEditor.setWidth(530);
 		rtEditor.setHeight(150);
 		rtEditor.setValue(text);
 		addItem(rtEditor);
+		// Buttons
 		buttonLayout.addMember(cancel);
 		buttonLayout.addMember(save);
 		addItem(buttonLayout);
-		setWidth(550);
-		setHeight(210);
-		centerInPage();
 
 		cancel.addClickHandler(new ClickHandler() {
 

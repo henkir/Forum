@@ -1,6 +1,6 @@
 package com.forum.client.admin;
 
-import com.forum.client.LoginForm;
+import com.forum.client.LoginWindow;
 import com.forum.client.data.ForumService;
 import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.Privileges;
@@ -8,10 +8,10 @@ import com.forum.client.data.SessionHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Overflow;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
-import com.smartgwt.client.widgets.layout.VLayout;
 
 /**
  * A subclass of Canvas that verifies that a user is authorized and shows an
@@ -32,6 +32,11 @@ public class AdminPanel extends Canvas {
 	 */
 	private AsyncCallback<Integer> callbackAuthorize;
 
+	private AsyncCallback<String> callbackLogin;
+
+	/**
+	 * The admin panel that is shown when the user is authorized.
+	 */
 	private AuthorizedAdminPanel authorizedAdminPanel;
 
 	/**
@@ -68,7 +73,23 @@ public class AdminPanel extends Canvas {
 	 * Creates the callbacks used.
 	 */
 	private void createCallbacks() {
+		callbackLogin = new AsyncCallback<String>() {
 
+			@Override
+			public void onFailure(Throwable caught) {
+				SC.say("Failure", "Failed to log in.");
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				if (result != null) {
+					reload(result);
+				} else {
+					SC.say("Mismatching cresidentials",
+							"Username and password do not match.");
+				}
+			}
+		};
 		callbackAuthorize = new AsyncCallback<Integer>() {
 
 			@Override
@@ -115,6 +136,12 @@ public class AdminPanel extends Canvas {
 		return window;
 	}
 
+	/**
+	 * Reloads the admin panel.
+	 * 
+	 * @param sid
+	 *            the new session ID
+	 */
 	public void reload(String sid) {
 		if (authorizedAdminPanel != null) {
 			removeChild(authorizedAdminPanel);
@@ -130,17 +157,8 @@ public class AdminPanel extends Canvas {
 	 * Shows a login window with textboxes for username and password.
 	 */
 	private void showLogin() {
-		Label instructionLabel = new Label(
-				"This area requires authorization. Please log in.");
-		instructionLabel.setAutoHeight();
-		VLayout layout = new VLayout(10);
-		layout.addMember(instructionLabel);
-		layout.addMember(new LoginForm(forumSvc, this));
-		window = createNotificationWindow("Log in");
-		window.addItem(layout);
-		window.draw();
-		window.animateResize(300, 200);
-		window.focus();
+		LoginWindow loginWindow = new LoginWindow(forumSvc, callbackLogin);
+		loginWindow.draw();
 	}
 
 	/**

@@ -14,6 +14,12 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
+/**
+ * A Window for logging in.
+ * 
+ * @author henrik
+ * 
+ */
 public class LoginWindow extends Window {
 
 	private ForumServiceAsync forumSvc;
@@ -22,20 +28,32 @@ public class LoginWindow extends Window {
 	private TextItem usernameItem = new TextItem();
 	private PasswordItem passwordItem = new PasswordItem();
 
+	/**
+	 * Creates a new LoginWindow.
+	 * 
+	 * @param forumSvc
+	 *            for AsyncCallbacks
+	 * @param callback
+	 *            the AsyncCallback to use when submitted
+	 */
 	public LoginWindow(ForumServiceAsync forumSvc,
 			AsyncCallback<String> callback) {
 		super();
 		this.forumSvc = forumSvc;
 		this.callback = callback;
 
+		// Set properties
 		setTitle("Log in");
 		setShowMinimizeButton(false);
 		setIsModal(true);
 		setShowModalMask(true);
+		setAutoSize(true);
 		centerInPage();
 
+		// Set data source for form
 		form.setDataSource(new LoginDataSource());
 
+		// Set items in the form
 		usernameItem.setName("username");
 
 		usernameItem.addKeyPressHandler(new KeyPressHandler() {
@@ -76,9 +94,12 @@ public class LoginWindow extends Window {
 		form.setFields(usernameItem, passwordItem, loginItem);
 
 		addItem(form);
-		setAutoSize(true);
+
 	}
 
+	/**
+	 * Validates and submits the form.
+	 */
 	private void submit() {
 		if (form.validate()) {
 			forumSvc

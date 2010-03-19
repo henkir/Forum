@@ -2,25 +2,60 @@ package com.forum.client.data;
 
 import java.io.Serializable;
 
+/**
+ * Contains data about a category.
+ * 
+ * @author henrik
+ * 
+ */
 public class CategoryData implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6947233962770339525L;
+	/**
+	 * The name of the category.
+	 */
 	private String name = null;
+	/**
+	 * The description of the category.
+	 */
 	private String description = null;
-
+	/**
+	 * The ID of the category.
+	 */
 	private int id = 0;
 
+	/**
+	 * Creates a new CategoryData.
+	 */
 	public CategoryData() {
 
 	}
 
+	/**
+	 * Creates a new CategoryData.
+	 * 
+	 * @param id
+	 *            the ID of the category
+	 * @param name
+	 *            the name of the category
+	 */
 	public CategoryData(int id, String name) {
 		this.name = name;
 		this.id = id;
 	}
 
+	/**
+	 * Creates a new CategoryData.
+	 * 
+	 * @param id
+	 *            the ID of the category
+	 * @param name
+	 *            the name of the category
+	 * @param description
+	 *            the description of the category
+	 */
 	public CategoryData(int id, String name, String description) {
 		this.name = name;
 		this.description = description;
