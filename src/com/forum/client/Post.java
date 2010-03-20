@@ -50,7 +50,7 @@ public class Post extends Canvas implements Serializable {
 
 	private IButton editPost = new IButton("Edit");
 	private IButton removePost = new IButton("Remove");
-	private ForumThread topic;
+	private ForumTopic topic;
 
 	/**
 	 * Constructor taking all the values from the database
@@ -67,7 +67,7 @@ public class Post extends Canvas implements Serializable {
 	 *            Text of the post
 	 */
 	public Post(long id, int thID, int auID, String date, String text,
-			ForumThread topic) {
+			ForumTopic topic) {
 		super();
 		this.text = text;
 		this.authorID = auID;

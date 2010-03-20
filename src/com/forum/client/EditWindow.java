@@ -25,7 +25,7 @@ public class EditWindow extends Window {
 	private HStack buttonLayout = new HStack(5);
 	private long id;
 	private String text;
-	private ForumThread topic;
+	private ForumTopic topic;
 
 	/**
 	 * Creates a new Window that is centered in the page.
@@ -39,7 +39,7 @@ public class EditWindow extends Window {
 	 * @param forumService
 	 *            for making AsyncCallbacks
 	 */
-	public EditWindow(long postId, String postText, ForumThread postTopic,
+	public EditWindow(long postId, String postText, ForumTopic postTopic,
 			ForumServiceAsync forumService) {
 		this.id = postId;
 		this.text = postText;

@@ -133,7 +133,7 @@ public class CategoryListGrid extends ListGrid {
 		setFields(categoryField, descriptionField);
 		categoryField.setValidateOnChange(true);
 		LengthRangeValidator categoryValidator = new LengthRangeValidator();
-		categoryValidator.setMin(3);
+		categoryValidator.setMin(1);
 		categoryValidator.setMax(20);
 		categoryField.setValidators(categoryValidator);
 

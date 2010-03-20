@@ -5,7 +5,6 @@ import com.forum.client.data.ForumServiceAsync;
 import com.forum.client.data.SessionHandler;
 import com.forum.client.data.User;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -41,6 +40,8 @@ public class AddTopicPanel extends Canvas {
 	private DynamicForm form = new DynamicForm();
 	// button for submitting the new post
 	private IButton submitButton = new IButton("Submit Topic");
+	// button for canceling
+	private IButton cancelButton = new IButton("Cancel");
 	// Category ID
 	private int catID;
 	// Reference to the parent and the category
@@ -120,39 +121,46 @@ public class AddTopicPanel extends Canvas {
 
 						@Override
 						public void onSuccess(Integer result) {
-							// TODO : add initial post
-							
+
 							final int topicID = result;
 							forumSvc.getUser(SessionHandler.getSessionId(),
 									new AsyncCallback<User>() {
 
 										@Override
 										public void onFailure(Throwable caught) {
-											SC.say("Failure", "There was a failure.");
+											SC.say("Failure",
+													"There was a failure.");
 										}
 
 										@Override
 										public void onSuccess(final User result) {
 											int userId = result.getId();
-											forumSvc.addPost(text, topicID, userId,
-													new AsyncCallback<Integer>() {
+											forumSvc
+													.addPost(
+															text,
+															topicID,
+															userId,
+															new AsyncCallback<Integer>() {
 
-														@Override
-														public void onFailure(Throwable caught) {
+																@Override
+																public void onFailure(
+																		Throwable caught) {
 
-														}
+																}
 
-														@Override
-														public void onSuccess(Integer result) {
+																@Override
+																public void onSuccess(
+																		Integer result) {
 
-															cat.setTopic(topicID);
+																	cat
+																			.setTopic(topicID);
 
-														}
-													});
+																}
+															});
 
 										}
 									});
-							
+
 							parent.removeChild(getThis());
 
 						}
@@ -162,6 +170,16 @@ public class AddTopicPanel extends Canvas {
 
 				}
 
+			}
+		});
+
+		cancelButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				parent.removeChild(getThis());
+				cat.unhide();
+				destroy();
 			}
 		});
 
@@ -182,7 +200,10 @@ public class AddTopicPanel extends Canvas {
 		layout.addMember(title);
 		layout.addMember(form);
 		layout.addMember(rtEditor);
-		layout.addMember(submitButton);
+		HStack buttonLayout = new HStack(5);
+		buttonLayout.addMember(cancelButton);
+		buttonLayout.addMember(submitButton);
+		layout.addMember(buttonLayout);
 
 		addChild(layout);
 		parent.addChild(this);

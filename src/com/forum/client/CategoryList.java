@@ -59,6 +59,14 @@ public class CategoryList extends Canvas {
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				if (hidden) {
+					if (currentCategory != null) {
+						AddTopicPanel panel = currentCategory
+								.getAddTopicPanel();
+						if (panel != null) {
+							currentCategory.removeChild(panel);
+							currentCategory.destroyAddTopicPanel();
+						}
+					}
 					unhide();
 					killCategory();
 				}
@@ -91,8 +99,16 @@ public class CategoryList extends Canvas {
 			public void onClick(ClickEvent event) {
 				if (currentCategory != category) {
 					hide();
-					if (currentCategory != null)
+					if (currentCategory != null) {
+						AddTopicPanel panel = currentCategory
+								.getAddTopicPanel();
+						if (panel != null) {
+							currentCategory.removeChild(panel);
+							currentCategory.destroyAddTopicPanel();
+
+						}
 						killCategory();
+					}
 					currentCategory = category;
 					parent.addChild(category);
 					category.unhide();
@@ -138,6 +154,7 @@ public class CategoryList extends Canvas {
 	 * Hides the categoylist to the far left of the parent. The movement is
 	 * animated = super cool
 	 */
+	@Override
 	public void hide() {
 
 		animateRect(0, 0, 200, getHeight(), null, 1000);

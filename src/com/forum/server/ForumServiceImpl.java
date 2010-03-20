@@ -281,10 +281,10 @@ public class ForumServiceImpl extends RemoteServiceServlet implements
 					description = categories[i].getDescription();
 					if (name.length() >= 3 && name.length() <= 20
 							&& description.length() <= 100) {
-						querySelect2 = "SELECT id FROM categories WHERE name = ?;";
+						querySelect2 = "SELECT id FROM categories WHERE id = ?;";
 						statement = connection
 								.getPreparedStatement(querySelect2);
-						statement.setString(1, name);
+						statement.setInt(1, categories[i].getId());
 						rs = statement.executeQuery();
 						if (rs.next()) {
 							queryUpdate = "UPDATE categories SET name = ?, description = ?, position = ? WHERE id = ?;";

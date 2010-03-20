@@ -35,7 +35,7 @@ public class Category extends Canvas {
 	// labels of the topics
 	private ArrayList<Label> labels = new ArrayList<Label>();
 	// the IDs' of the topice
-	private ArrayList<ForumThread> topics = new ArrayList<ForumThread>();
+	private ArrayList<ForumTopic> topics = new ArrayList<ForumTopic>();
 	// list of ids
 	private ArrayList<Integer> topicIds = new ArrayList<Integer>();
 	// a button to add a thread
@@ -45,7 +45,9 @@ public class Category extends Canvas {
 	// keeps track of where to draw
 	private int currentHeight = 0;
 	// keeps track of the current showing thread
-	private ForumThread currentThread = null;
+	private ForumTopic currentThread = null;
+	// Panel for adding topics
+	private AddTopicPanel addTopicPanel = null;
 
 	/**
 	 * Constructor
@@ -79,8 +81,11 @@ public class Category extends Canvas {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				if (hidden) {
+					if (addTopicPanel != null) {
+						removeChild(addTopicPanel);
+						addTopicPanel.destroy();
+					}
 					unhide();
 					killTopic();
 				}
@@ -95,14 +100,12 @@ public class Category extends Canvas {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				if (!hidden) {
-					AddTopicPanel panel = new AddTopicPanel(catid, parent,
-							getThis());
-
 					hide();
-
+				} else {
+					killTopic();
 				}
+				addTopicPanel = new AddTopicPanel(catid, parent, getThis());
 			}
 		});
 		forumSvc.isLoggedIn(SessionHandler.getSessionId(),
@@ -124,13 +127,34 @@ public class Category extends Canvas {
 		getTopics();
 	}
 
+	public void destroyAddTopicPanel() {
+		if (addTopicPanel != null) {
+			addTopicPanel.destroy();
+		}
+	}
+
+	/**
+	 * @return the addTopicPanel
+	 */
+	public AddTopicPanel getAddTopicPanel() {
+		return addTopicPanel;
+	}
+
+	/**
+	 * @param addTopicPanel
+	 *            the addTopicPanel to set
+	 */
+	public void setAddTopicPanel(AddTopicPanel addTopicPanel) {
+		this.addTopicPanel = addTopicPanel;
+	}
+
 	/**
 	 * Adds a topic to the category
 	 * 
 	 * @param topic
 	 *            The topic to be added
 	 */
-	public void addThread(final ForumThread topic) {
+	public void addThread(final ForumTopic topic) {
 		final Label label = new Label("<div class='category'>"
 				+ topic.getName() + "</div>");
 		topics.add(topic);
@@ -139,6 +163,10 @@ public class Category extends Canvas {
 			@Override
 			public void onClick(ClickEvent event) {
 				if (currentThread != topic) {
+					if (addTopicPanel != null) {
+						removeChild(addTopicPanel);
+						addTopicPanel.destroy();
+					}
 					topic.draw();
 					hide();
 					currentThread = topic;
@@ -181,7 +209,7 @@ public class Category extends Canvas {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				System.err.println("detta sög ju");
+				System.err.println("failed getting topics");
 
 			}
 
@@ -190,7 +218,7 @@ public class Category extends Canvas {
 				for (int i = 0; i < result.length; i++) {
 
 					if (!topicIds.contains(result[i].getId())) {
-						addThread(new ForumThread(result[i].getId(), result[i]
+						addThread(new ForumTopic(result[i].getId(), result[i]
 								.getCategoryID(), result[i].getAuthorID(),
 								result[i].getName(), result[i].getDate(),
 								parent));
@@ -206,6 +234,7 @@ public class Category extends Canvas {
 	/**
 	 * Hides the component
 	 */
+	@Override
 	public void hide() {
 		animateRect(250, 0, 200, getHeight(), null, 1000);
 		for (Label l : labels)
@@ -242,8 +271,8 @@ public class Category extends Canvas {
 
 					@Override
 					public void run() {
-						ForumThread topic = null;
-						for (ForumThread t : topics) {
+						ForumTopic topic = null;
+						for (ForumTopic t : topics) {
 							if (t.getID() == topicID) {
 								topic = t;
 								break;
@@ -266,10 +295,9 @@ public class Category extends Canvas {
 	}
 
 	/**
-	 * Unghides the component
+	 * Unhides the component
 	 */
 	public void unhide() {
-
 		animateRect(500, 0, 600, getHeight(), null, 1000);
 		getTopics();
 		for (Label l : labels)
