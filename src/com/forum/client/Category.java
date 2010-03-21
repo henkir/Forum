@@ -9,6 +9,7 @@ import com.forum.client.data.TopicData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
@@ -77,6 +78,7 @@ public class Category extends Canvas {
 		title.setTop(currentHeight);
 		title.setHeight(25);
 		title.setWidth(200);
+		title.setCursor(Cursor.POINTER);
 		title.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -177,6 +179,7 @@ public class Category extends Canvas {
 		labels.add(label);
 		label.setHeight(30);
 		label.setWidth(getWidth());
+		label.setCursor(Cursor.POINTER);
 		setHeight(getHeight() + label.getHeight());
 		label.setTop(currentHeight);
 		currentHeight += label.getHeight();

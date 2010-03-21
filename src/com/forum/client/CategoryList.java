@@ -8,6 +8,7 @@ import com.forum.client.data.ForumServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -53,6 +54,7 @@ public class CategoryList extends Canvas {
 		title.setTop(currentHeight);
 		title.setHeight(30);
 		title.setWidth(200);
+		title.setCursor(Cursor.POINTER);
 		title.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -119,6 +121,7 @@ public class CategoryList extends Canvas {
 		label.setHeight(30);
 		label.setWidth(getWidth());
 		label.setAlign(Alignment.CENTER);
+		label.setCursor(Cursor.POINTER);
 		setHeight(getHeight() + label.getHeight());
 		label.setTop(currentHeight);
 		currentHeight += label.getHeight();
