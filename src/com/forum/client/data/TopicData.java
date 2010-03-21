@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Contains data about a topic.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class TopicData implements Serializable {

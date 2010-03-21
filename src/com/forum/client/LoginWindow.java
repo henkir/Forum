@@ -17,7 +17,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 /**
  * A Window for logging in.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class LoginWindow extends Window {

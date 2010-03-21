@@ -3,7 +3,7 @@ package com.forum.client.data;
 /**
  * Contains the different Privileges available, and also some help methods.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public enum Privileges {

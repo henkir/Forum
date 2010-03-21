@@ -19,7 +19,7 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 /**
  * A graphical representation of the list of topics in the forum
  * 
- * @author jonas
+ * @author henho106 + jonhe442
  * 
  */
 public class Category extends Canvas {

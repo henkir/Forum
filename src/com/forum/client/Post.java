@@ -24,7 +24,7 @@ import com.smartgwt.client.widgets.layout.VStack;
 /**
  * Component for showing a post
  * 
- * @author jonas
+ * @author henho106 + jonhe442
  * 
  */
 public class Post extends Canvas implements Serializable {

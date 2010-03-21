@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Contains data about a post.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class PostData implements Serializable {

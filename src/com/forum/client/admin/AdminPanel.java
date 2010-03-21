@@ -17,7 +17,7 @@ import com.smartgwt.client.widgets.Window;
  * A subclass of Canvas that verifies that a user is authorized and shows an
  * admin panel.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class AdminPanel extends Canvas {

@@ -9,7 +9,7 @@ import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 /**
  * A data source for registering a new user.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class RegisterDataSource extends DataSource {

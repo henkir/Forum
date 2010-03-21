@@ -17,7 +17,7 @@ import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
  * A subclass of ListGrid specialized in displaying users and allowing the user
  * to edit and delete users.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class UserListGrid extends ListGrid {

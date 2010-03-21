@@ -16,7 +16,7 @@ import com.smartgwt.client.widgets.layout.VStack;
 /**
  * Shows the admin panel, it assumes that the user is authorized.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class AuthorizedAdminPanel extends Canvas {

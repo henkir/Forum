@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * A class for storing information about a user.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class User implements Serializable {

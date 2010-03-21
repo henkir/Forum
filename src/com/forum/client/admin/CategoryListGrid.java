@@ -15,7 +15,7 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
  * A subclass of ListGrid specialized in displaying categories and allowing the
  * user to edit, add and delete categories.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class CategoryListGrid extends ListGrid {

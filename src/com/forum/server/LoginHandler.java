@@ -15,7 +15,7 @@ import com.forum.client.data.User;
  * A static class that keeps track of logged in users and provides methods for
  * logging in/out user and checking if a user is logged in or not.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class LoginHandler {

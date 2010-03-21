@@ -18,7 +18,7 @@ import com.smartgwt.client.widgets.events.ClickHandler;
  * A class that contains the categories of the forum it also extends Canvas to
  * have a GUI for the categories
  * 
- * @author jonas+henke
+ * @author henho106 + jonhe442+henke
  * 
  */
 public class CategoryList extends Canvas {

@@ -23,7 +23,7 @@ import com.smartgwt.client.widgets.layout.VStack;
 /**
  * A structure for a topic in the forum
  * 
- * @author jonas
+ * @author henho106 + jonhe442
  * 
  */
 public class ForumTopic implements Serializable {

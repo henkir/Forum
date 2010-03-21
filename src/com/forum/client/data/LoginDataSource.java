@@ -7,7 +7,7 @@ import com.smartgwt.client.data.fields.DataSourceTextField;
 /**
  * A data source for logging in.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class LoginDataSource extends DataSource {

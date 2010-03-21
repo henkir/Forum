@@ -21,7 +21,7 @@ import com.smartgwt.client.widgets.layout.VStack;
 /**
  * A component for adding topics
  * 
- * @author jonas
+ * @author henho106 + jonhe442
  * 
  */
 public class AddTopicPanel extends Canvas {

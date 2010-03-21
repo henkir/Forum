@@ -13,7 +13,7 @@ import com.smartgwt.client.widgets.layout.HStack;
 /**
  * A Window containing an editor for editing a post.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class EditWindow extends Window {

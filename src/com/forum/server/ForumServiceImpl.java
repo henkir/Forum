@@ -17,7 +17,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * The server end of the AsyncCallbacks.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class ForumServiceImpl extends RemoteServiceServlet implements

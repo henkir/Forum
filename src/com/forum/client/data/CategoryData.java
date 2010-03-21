@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Contains data about a category.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class CategoryData implements Serializable {

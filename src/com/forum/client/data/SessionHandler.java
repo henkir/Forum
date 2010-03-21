@@ -7,7 +7,7 @@ import com.google.gwt.user.client.Cookies;
 /**
  * A static class for handling the session on the client side.
  * 
- * @author henrik
+ * @author henho106 + jonhe442
  * 
  */
 public class SessionHandler {
